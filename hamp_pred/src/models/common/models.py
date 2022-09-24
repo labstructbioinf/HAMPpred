@@ -27,7 +27,6 @@ class BaseWrapper:
         self._name = name
         self.weights_path = self._get_weights_path() if prev_name in self.weights_path else self.weights_path
 
-
     def _get_weights_path(self):
         dft_weights = pathlib.Path(__file__).parent.parent.parent.parent.parent
         dd = self.use_case if not self.version else '_'.join([self.use_case, self.version])
@@ -39,11 +38,12 @@ class BaseWrapper:
         if not os.path.exists(os.path.dirname(self.weights_path)):
             os.makedirs(os.path.dirname(self.weights_path), exist_ok=True)
         self.history = self._model.fit(X_train, y_train,
-                        epochs=self.config.get('epochs', 60),
-                        verbose=True,
-                        validation_data=(X_train, y_train),  # (X_test, y_test) if X_test and y_test else None,
-                        batch_size=64,
-                        callbacks=list(self.callbacks()))
+                                       epochs=self.config.get('epochs', 60),
+                                       verbose=True,
+                                       validation_data=(X_train, y_train),
+                                       # (X_test, y_test) if X_test and y_test else None,
+                                       batch_size=64,
+                                       callbacks=list(self.callbacks()))
         self._model.load_weights(self.weights_path)
         return self
 
@@ -100,14 +100,12 @@ class BaseLinearWrapper(BaseWrapper):
         dense1 = layers.Dense(100, activation='relu')(inp)
         self.dense2 = layers.Dense(100, activation='relu')
 
-
     def build_many_inp_out(self, inp_shape, out_shape, n_inp=2, n_out=2):
         inps = []
         for inp in range(n_inp):
             inps.append(Input(shape=inp_shape, name=f"inp{inp}"))
         concate_input = layers.Concatenate()(inps)
         model = self._model_schema(concate_input)
-
 
     def build(self, inp_shape, out_shape):
         inp = Input(inp_shape)

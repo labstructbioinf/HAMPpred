@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from Bio.PDB.Polypeptide import three_to_one
 
-from ma_predictor.src.input_prep.encode import LabelEncoder
+from hamp_pred.src.input_prep.encode import LabelEncoder
 
 
 class PandasOutput:
@@ -61,7 +61,7 @@ class SeqWindow(SequencePreparator):
             if preds is not None:
                 cc = preds[c: c + len(data)]
                 preps.append(self._resolve_preds(cc, lg, resolve_common))
-                c+=len(data)
+                c += len(data)
             results.append(res[:lg])
         if preps:
             return results, preps
@@ -91,7 +91,7 @@ class MultiChainOperator:
                  y_encoder=None,
                  y_preparator=None,
                  n_chains=2, chain_names=('N', 'C'),
-                 solo_helix = False,
+                 solo_helix=False,
                  sep=' ', auto_split=True,
                  linkers_length=None, lengths=None,
                  parallel=False, first_last_skip=True):
@@ -285,9 +285,9 @@ class MultiChainOperator:
 
     def _train_valid_test_split(self, val_s=0.1, test_s=0.1, test_ids=None, val_ids=None):
         ids = set(self._data['id'])
-        tap = [0] * (len(set(ids)) +1)
+        tap = [0] * (len(set(ids)) + 1)
         for w, data in self._data.groupby('id'):
-            tap[w+1] = tap[w] + len(data)
+            tap[w + 1] = tap[w] + len(data)
         tt = max(ids)
         val_size = int(val_s * tt)
         test_size = int(test_s * tt)
@@ -304,18 +304,18 @@ class MultiChainOperator:
 
         tr, vl, te = [], [], []
         for p in train_ids:
-            tr.extend(list(range(tap[p], tap[p+1])))
+            tr.extend(list(range(tap[p], tap[p + 1])))
         for p in test_ids:
-            te.extend(list(range(tap[p], tap[p+1])))
+            te.extend(list(range(tap[p], tap[p + 1])))
         for p in val_ids:
-            vl.extend(list(range(tap[p], tap[p+1])))
+            vl.extend(list(range(tap[p], tap[p + 1])))
         return tr, te, vl
 
     def _get_for_train_from_samcc(self, data=None,
-                                 processor=None,
-                                 params=('crdev',),
-                                 chain_map=None,
-                                 identifier ='source'):
+                                  processor=None,
+                                  params=('crdev',),
+                                  chain_map=None,
+                                  identifier='source'):
         data = data or data
         chain_map = chain_map or {}
         if isinstance(data, pd.DataFrame):
@@ -374,5 +374,3 @@ class SamCCOutputReader:
             if limit and c > limit:
                 break
         return X, Y, ids
-
-

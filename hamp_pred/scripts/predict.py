@@ -1,8 +1,8 @@
 import argparse
 import pickle
 
-from ma_predictor.src.predictor import Predictor
-from ma_predictor.src.predictor_config import DEFAULT_CONF
+from hamp_pred.src.predictor import Predictor
+from hamp_pred.src.predictor_config import DEFAULT_CONF
 
 
 def main(args):

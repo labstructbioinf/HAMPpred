@@ -1,12 +1,14 @@
 import subprocess
+from itertools import chain
 
 import h5py.h5a
 import numpy as np
 from Bio.PDB.Polypeptide import aa1
-from sklearn.preprocessing import OneHotEncoder
-from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
 from sklearn.preprocessing import MinMaxScaler
-from itertools import chain
+from sklearn.preprocessing import OneHotEncoder
+
+from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
+
 
 class SequenceEncoder:
     def encode(self, seq, *args, **kwargs):
@@ -19,7 +21,7 @@ class SequenceEncoder:
         k = len(many)
         c = 0
         for seq in many:
-            c+=1
+            c += 1
             results.append(self.encode(seq))
             print(f'Encoded {c}/{k} sequences')
         return np.array(results)
@@ -32,6 +34,7 @@ class LabelEncoder:
 
     def encode(self, labels, *args, **kwargs):
         pass
+
 
 class RadiousPhobosEncoder(SequenceEncoder):
     radius = {
@@ -78,17 +81,21 @@ class RadiousPhobosEncoder(SequenceEncoder):
         'K': -3.9,
         'R': -4.5
     }
+
     def __init__(self):
         self.phobos_scaled = self._scale_dict(self.phobos)
         self.radius_scaled = self._scale_dict(self.radius)
+
     def _scale_dict(self, d):
         a = np.asarray(list(d.values())).reshape(-1, 1)
         v = MinMaxScaler().fit_transform(a)
         v = v.reshape(len(d)).tolist()
         return dict(zip(d.keys(), v))
+
     def encode(self, seq, *args, **kwargs):
         return np.asarray(list([(self.radius_scaled.get(i, 0), self.phobos_scaled.get(i, 0)) for i in list(seq)]))
-    
+
+
 class OneHotEncoderSeq(SequenceEncoder):
     def __init__(self, categories='', null_cat='?'):
         cats = categories if categories else aa1
@@ -114,7 +121,7 @@ class OneHotEncoderSeq(SequenceEncoder):
             dd = [0] * len(self.cats + self.null_char)
             if aa in self.cat_dict:
                 pos = self.cat_dict[aa]
-                dd[pos] = 1            
+                dd[pos] = 1
             results.append(dd)
         return np.array(results)
 
@@ -169,6 +176,7 @@ class RadianEncoder(LabelEncoder):
         ret = np.asarray(res)
         return ret
 
+
 class SeqveqEncoder:
     def __init__(self, seqveq_script='embed_sequences.py'):
         self.seqveq_script = seqveq_script
@@ -192,4 +200,3 @@ class SeqveqEncoder:
 
 def seqs_from_dataframe(dataframe):
     return list(dataframe['sequence'])
-

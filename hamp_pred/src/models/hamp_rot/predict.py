@@ -1,8 +1,8 @@
 import numpy as np
 
-from ma_predictor.src.input_prep.encode import OneHotEncoderSeq, RadianEncoder
-from ma_predictor.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
-from ma_predictor.src.models.common.models import  BaseLinearWrapper
+from hamp_pred.src.input_prep.encode import OneHotEncoderSeq, RadianEncoder
+from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
+from hamp_pred.src.models.common.models import BaseLinearWrapper
 
 
 def run(sequences, config=None):
