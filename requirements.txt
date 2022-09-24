@@ -1,0 +1,7 @@
+numpy
+pandas
+keras
+paramiko
+tensorflow
+Bio
+seaborn
