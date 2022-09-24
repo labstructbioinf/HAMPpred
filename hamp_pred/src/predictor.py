@@ -4,12 +4,11 @@ import os
 import numpy as np
 import pandas as pd
 from Bio.PDB.Polypeptide import three_to_one
+from keras import backend as K
 
-from ma_predictor.src.input_prep.msa import Msa
-from ma_predictor.src.predictor_config import DEFAULT_CONF
-from ma_predictor.src.output_analysis.mutator import HeptadMutator
-from keras import backend as K 
-
+from hamp_pred.src.input_prep.msa import Msa
+from hamp_pred.src.output_analysis.mutator import HeptadMutator
+from hamp_pred.src.predictor_config import DEFAULT_CONF
 
 
 class Predictor:
@@ -33,14 +32,14 @@ class Predictor:
                              f"{set(os.listdir(self.models_dir)).difference({'common'})}")
         self.infra = infra
 
-    def predict(self, data, with_model = False, **kwargs):
+    def predict(self, data, with_model=False, **kwargs):
         base = self.model_dir.replace(os.sep, '.')
-        predict = importlib.import_module(f"ma_predictor.src.{base}.predict")
+        predict = importlib.import_module(f"hamp_pred.src.{base}.predict")
         conf = self.config.dump()
         conf |= kwargs
         for kw in kwargs:
             if hasattr(conf['operator'], kw):
-                setattr(conf['operator'],kw, kwargs[kw])
+                setattr(conf['operator'], kw, kwargs[kw])
         result = predict.run(data, conf)
         if with_model:
             return result
@@ -51,7 +50,7 @@ class Predictor:
         self.config.operator.parallel = True
         self.config.set_val_ids(val_ids)
         self.config.set_ids(ids)
-        train = importlib.import_module(f"ma_predictor.src.{base}.train")
+        train = importlib.import_module(f"hamp_pred.src.{base}.train")
         return train.run(data, self.config.dump())
 
     def process_data(self, *args, kind='msa', **kwargs):
@@ -71,17 +70,16 @@ class Predictor:
         to_train = processor.prepare_train()
         results = self.train(to_train)
         return results
-    
+
     def md(self, data, **kwargs):
         base = self.model_dir.replace(os.sep, '.')
-        predict = importlib.import_module(f"ma_predictor.src.{base}.predict")
+        predict = importlib.import_module(f"hamp_pred.src.{base}.predict")
         conf = self.config.dump()
         conf |= kwargs
         for kw in kwargs:
             if hasattr(conf['operator'], kw):
-                setattr(conf['operator'],kw, kwargs[kw])
+                setattr(conf['operator'], kw, kwargs[kw])
         return predict.model(data, conf)[0]
-        
 
 
 class MsaProcessor:
@@ -119,7 +117,7 @@ class FastaProcessor:
 
 class SamccTestProcessor:
     def __init__(self, path, test_ids=None, n_chains=(0, 1), identifier='source',
-                 params=('crdev', )):
+                 params=('crdev',)):
         self.path = path
         self.test_ids = set(test_ids) if test_ids else None
         self.n_chains = n_chains
@@ -168,7 +166,7 @@ class SamccTestProcessor:
         return Xx, Yy, identifiers
 
     def prepare_pred(self):
-        x, y , id_ = self.get_data()
+        x, y, id_ = self.get_data()
         return x
 
     def prepare_out(self, results):

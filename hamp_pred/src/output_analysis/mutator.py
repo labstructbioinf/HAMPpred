@@ -72,5 +72,3 @@ class HeptadMutator:
             if i == j:
                 sc += 1
         return sc
-
-

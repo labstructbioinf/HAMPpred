@@ -121,7 +121,7 @@ class CdHitAnalyzer:
 
 
 def prepare_test_set():
-    seq_dict = SeqIO.parse('ma_predictor/src/samcc_seq_0.fasta', 'fasta')
+    seq_dict = SeqIO.parse('hamp_pred/src/samcc_seq_0.fasta', 'fasta')
     seq_dict = {seq.id: str(seq.seq) for seq in seq_dict}
-    w = CdHitAnalyzer('ma_predictor/data/input/cd_hit.clstr')
+    w = CdHitAnalyzer('hamp_pred/data/input/cd_hit.clstr')
     w.prepare_test_set(seq_dict=seq_dict)

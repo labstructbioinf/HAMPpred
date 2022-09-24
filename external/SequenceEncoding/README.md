@@ -34,4 +34,5 @@ optional arguments:
 
 # Reference
 
-Xiaoyang Jing, Qiwen Dong, Daocheng Hong, Ruqian Lu. Amino acid encoding methods for protein sequence: a comprehensive review and assessment. Submitted, 2019.
+Xiaoyang Jing, Qiwen Dong, Daocheng Hong, Ruqian Lu. Amino acid encoding methods for protein sequence: a comprehensive
+review and assessment. Submitted, 2019.

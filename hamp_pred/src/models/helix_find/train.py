@@ -1,8 +1,10 @@
 import pathlib
 
-from ma_predictor.src.input_prep.prepare_sequence import MultiChainOperator
-from ma_predictor.src.models.common.models import BaseLinearWrapper
 import pandas as pd
+
+from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator
+from hamp_pred.src.models.common.models import BaseLinearWrapper
+
 
 def run(data, config=None):
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
@@ -11,7 +13,7 @@ def run(data, config=None):
     operator.n_chains = 1
     operator.chain_names = ('N',)
     seqs = list(data.seq.values)
-    vals = [ [[ [int(p)] for p in x]] for x in data['labels'].values]
+    vals = [[[[int(p)] for p in x]] for x in data['labels'].values]
     operator.y_encoder = None
     train, valid, test = operator.get_for_train(seqs, vals,
                                                 test_ids=config.get('test_ids'))
@@ -23,5 +25,3 @@ def run(data, config=None):
         train(X, y, val_x, val_y)
     results = model.test(test[0], test[1])
     return results
-
-

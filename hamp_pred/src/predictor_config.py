@@ -3,9 +3,10 @@ import pathlib
 from Bio import SeqIO
 
 from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
-from ma_predictor.src.input_prep.encode import OneHotEncoderSeq, RadianEncoder, MixedEncoder
-from ma_predictor.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
-from ma_predictor.src.models.common.models import BaseConvolutionalWrapper, BaseLinearWrapper
+from hamp_pred.src.input_prep.encode import MixedEncoder, OneHotEncoderSeq, RadianEncoder
+from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
+from hamp_pred.src.models.common.models import BaseConvolutionalWrapper, BaseLinearWrapper
+
 
 class PredictionConfig:
     def __init__(self, model, operator,
@@ -26,8 +27,10 @@ class PredictionConfig:
         self.version = version
         self.model_config['task'] = self.task
         self.model_config['version'] = self.version
+
     def set_val_ids(self, val_ids):
         self.val_ids = val_ids
+
     def set_ids(self, ids):
         self.ids = ids
 
@@ -47,13 +50,14 @@ class PredictionConfig:
 test_path = pathlib.Path(__file__).parent.parent.parent.joinpath('data/input/test_seq.fasta')
 enc = MixedEncoder()
 enc.set_types(SequenceEncoding.encoding_types)
-operator = MultiChainOperator(OneHotEncoderSeq(), SeqWindow(19, 19), RadianEncoder(100),  SeqWindow(19, 19, null_char=[[0]]))
-operator_exteranl = MultiChainOperator(enc, SeqWindow(19, 19), RadianEncoder(100),  SeqWindow(19, 19, null_char=[[0]]))
+operator = MultiChainOperator(OneHotEncoderSeq(), SeqWindow(19, 19), RadianEncoder(100),
+                              SeqWindow(19, 19, null_char=[[0]]))
+operator_exteranl = MultiChainOperator(enc, SeqWindow(19, 19), RadianEncoder(100), SeqWindow(19, 19, null_char=[[0]]))
 
 SEQ_ENCODING_EXTERNAL = PredictionConfig(BaseConvolutionalWrapper,
-                                        operator_exteranl,
-                                        {'activation': 'tanh'},
-                                        test_path=test_path)
+                                         operator_exteranl,
+                                         {'activation': 'tanh'},
+                                         test_path=test_path)
 
 DEFAULT_CONF = PredictionConfig(BaseConvolutionalWrapper,
                                 operator,
