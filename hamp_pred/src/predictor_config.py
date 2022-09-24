@@ -6,7 +6,7 @@ from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dic
 from hamp_pred.src.input_prep.encode import MixedEncoder, OneHotEncoderSeq, RadianEncoder
 from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
 from hamp_pred.src.models.common.models import BaseConvolutionalWrapper, BaseLinearWrapper
-
+import os
 
 class PredictionConfig:
     def __init__(self, model, operator,
@@ -35,7 +35,7 @@ class PredictionConfig:
         self.ids = ids
 
     def set_test_ids(self):
-        if self.test_path:
+        if self.test_path and os.path.exists(self.test_path):
             ids = [seq.id for seq in SeqIO.parse(self.test_path, "fasta")]
             self.test_ids = ids
 
