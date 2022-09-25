@@ -33,7 +33,7 @@ class HeptadMutator:
             mocked = ['X' * self.length] * len(result)
             return [''.join(a) + b for a, b in zip(result, mocked)]
 
-    def prepare_pred(self, sample=10000):
+    def prepare_pred(self, data=None, sample=10000):
         return random.sample(self.all_combinations, sample, counts=[1] * len(self.all_combinations))
 
     def analyze(self, out: pd.DataFrame):

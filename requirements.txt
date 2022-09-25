@@ -5,3 +5,4 @@ paramiko
 tensorflow
 Bio
 seaborn
+scikit-learn
