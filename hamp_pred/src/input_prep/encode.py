@@ -1,11 +1,9 @@
 import subprocess
-from itertools import chain
 
 import h5py.h5a
 import numpy as np
 from Bio.PDB.Polypeptide import aa1
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import OneHotEncoder
 
 from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
 
@@ -196,6 +194,17 @@ class SeqveqEncoder:
             a_group_key = list(f.keys())[0]
             data = list(f[a_group_key])
         return data
+
+
+class MultiEncoder:
+    def __init__(self, encoders):
+        self.encoders = encoders
+
+    def encode(self, seq, *args, **kwargs):
+        results = []
+        for enc in self.encoders:
+            results.append(enc.encode(seq, *args, **kwargs))
+        return np.concatenate(results, axis=-1)
 
 
 def seqs_from_dataframe(dataframe):
