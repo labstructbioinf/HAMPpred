@@ -196,7 +196,7 @@ class SeqveqEncoder:
         return data
 
 
-class MultiEncoder:
+class MultiEncoder(SequenceEncoder):
     def __init__(self, encoders):
         self.encoders = encoders
 
