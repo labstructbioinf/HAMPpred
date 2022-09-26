@@ -3,19 +3,23 @@ import os
 
 from hamp_pred.src.output_analysis.common_processors import FastaProcessor, MsaProcessor, SamccTestProcessor
 from hamp_pred.src.output_analysis.feature_importance import ImportanceDescriber, ModelMetrics
+from hamp_pred.src.predictor_config import PredictionConfig
 
 
 class Predictor:
 
     def __init__(self, model, version=None,
+                 model_data_dir=None,
                  config=None, infra=None, processors=None):
         pos = os.path.dirname(__file__)
         self.models_dir = os.path.join(pos, 'models')
         self.model = model
         self.version = version
         self.model_dir = os.path.join(os.path.basename(self.models_dir), self.model)
+        self.model_data_dir = model_data_dir or self.default_model_dir()
         self.config = config
         self.config.set_task(self.model, self.version)
+        self.config.model_config['data_dir'] = self.model_data_dir
         self.config.set_test_ids()
         self.processors = processors or {'msa': MsaProcessor,
                                          'fasta': FastaProcessor,
@@ -28,10 +32,19 @@ class Predictor:
                              f"{set(os.listdir(self.models_dir)).difference({'common'})}")
         self.infra = infra
 
+    def default_model_dir(self):
+        pos = os.path.dirname(__file__)
+        if self.version:
+            return os.path.join(pos, '../../', f'data/output/weights/{self.model}/{self.version}')
+        return os.path.join(pos, '../../', f'data/output/weights/{self.model}')
+
     def predict(self, data, with_model=False, **kwargs):
         base = self.model_dir.replace(os.sep, '.')
         predict = importlib.import_module(f"hamp_pred.src.{base}.predict")
-        conf = self.config.dump()
+        last_config = PredictionConfig.from_pickle(os.path.join(self.model_data_dir, 'config.p'))
+        if self.config:
+            last_config = last_config.merge_with(self.config, favour_other=True)
+        conf = last_config.dump()
         conf |= kwargs
         for kw in kwargs:
             if hasattr(conf['operator'], kw):
@@ -47,7 +60,9 @@ class Predictor:
         self.config.set_val_ids(val_ids)
         self.config.set_ids(ids)
         train = importlib.import_module(f"hamp_pred.src.{base}.train")
-        return train.run(data, self.config.dump())
+        result = train.run(data, self.config.dump())
+        self.config.as_pickle(os.path.join(self.model_data_dir, 'config.p'))
+        return result
 
     def process_data(self, data, *args, kind='msa', **kwargs):
         processor = self.processors.get(kind)(*args, **kwargs, model=self)

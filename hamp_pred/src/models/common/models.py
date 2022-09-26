@@ -1,6 +1,4 @@
-import locale
 import os
-import pathlib
 
 from keras import Input, layers
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ProgbarLogger, ReduceLROnPlateau
@@ -8,11 +6,11 @@ from keras.models import Model
 
 
 class BaseWrapper:
-    def __init__(self, name, weights=None, use_case=None, version=None):
+    def __init__(self, name, data_dir=None, use_case=None, version=None):
         self._name = name
         self.use_case = use_case
         self.version = version
-        self.weights_path = weights or self._get_weights_path()
+        self.data_dir = data_dir
         self._model = None
         self.config = {}
         self.history = None
@@ -23,15 +21,11 @@ class BaseWrapper:
 
     @name.setter
     def name(self, name):
-        prev_name = self._name
         self._name = name
-        self.weights_path = self._get_weights_path() if prev_name in self.weights_path else self.weights_path
 
-    def _get_weights_path(self):
-        dft_weights = pathlib.Path(__file__).parent.parent.parent.parent.parent
-        dd = self.use_case if not self.version else '_'.join([self.use_case, self.version])
-        dft_weights = dft_weights.joinpath(f'data/output/weights/{dd}/{self.name}.h5')
-        return str(dft_weights)
+    @property
+    def weights_path(self) -> str:
+        return os.path.join(self.data_dir, f'{self.name}.h5')
 
     def train(self, X_train, y_train, X_test=None,
               y_test=None):
@@ -89,9 +83,9 @@ class BaseLinear(Model):
 
 
 class BaseLinearWrapper(BaseWrapper):
-    def __init__(self, name='base_linear', weights=None, config=None):
+    def __init__(self, name='base_linear', config=None):
         config = config or {}
-        super().__init__(name, weights, config.get('task'))
+        super().__init__(name, config.get('data_dir'), config.get('task'))
         self.config = config
         self._model_schema = BaseLinear()
         self._model = None
@@ -119,14 +113,11 @@ class BaseLinearWrapper(BaseWrapper):
         return super().train(X_train, y_train, X_test=X_test,
                              y_test=y_test)
 
-    def predict(self, X_data):
-        return super().predict(X_data)
-
 
 class BaseConvolutionalWrapper(BaseWrapper):
-    def __init__(self, name='base_convolutional', weights=None, config=None):
+    def __init__(self, name='base_convolutional', config=None):
         config = config or {}
-        super().__init__(name, weights, config.get('task'), config.get('version'))
+        super().__init__(name, config.get('data_dir'), config.get('task'), config.get('version'))
         self.config = config
 
     def _schema(self, inp, n_layers=3, filters=64, kernel_sizes=(7, 5, 3, 11, 14), norm=False, **kwargs):
@@ -172,5 +163,3 @@ class BaseConvolutionalWrapper(BaseWrapper):
         return super().train(X_train, y_train, X_test=X_test,
                              y_test=y_test)
 
-    def predict(self, X_data):
-        return super().predict(X_data)

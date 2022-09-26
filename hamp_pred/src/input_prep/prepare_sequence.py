@@ -239,6 +239,7 @@ class MultiChainOperator:
         if test_ids and ids:
             test_idx = {id_: n for n, id_ in enumerate(ids) if id_ in test_ids}
             test_idx = list(test_idx.values())
+        val_idx = None
         if val_ids and ids:
             val_idx = {id_: n for n, id_ in enumerate(ids) if id_ in val_ids}
             val_idx = list(val_idx.values())

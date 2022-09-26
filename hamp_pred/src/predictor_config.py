@@ -1,4 +1,5 @@
 import pathlib
+import pickle
 
 from Bio import SeqIO
 
@@ -45,6 +46,23 @@ class PredictionConfig:
             if not att.startswith('__'):
                 results[att] = getattr(self, att)
         return results
+
+    def as_pickle(self, path):
+        with open(path, 'wb') as dump:
+            pickle.dump(self, dump)
+
+    @classmethod
+    def from_pickle(cls, path):
+        with open(path, 'rb') as dump:
+            return pickle.load(dump)
+
+    def merge_with(self, other, favour_other=True):
+        for att in dir(self):
+            if not att.startswith('__'):
+                if favour_other:
+                    if hasattr(other, att):
+                        setattr(self, att, getattr(other, att))
+        return self
 
 
 test_path = pathlib.Path(__file__).parent.parent.parent.joinpath('data/input/test_seq.fasta')
