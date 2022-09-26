@@ -1,6 +1,43 @@
-import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
+
+
+class Metrics:
+    @staticmethod
+    def mse(tr, exp):
+        sm = 0
+        for t, e in zip(tr, exp):
+            sm += (t - e) ** 2
+        res = sm / len(exp)
+        return res if isinstance(res, float) else res[0]
+
+
+class ModelMetrics:
+    def __init__(self, model, correct_data=None, res_col='N_pred', tr_col='rot'):
+        self.model = model
+        self.correct_data = correct_data
+        self.res_col = res_col
+        self.tr_col = tr_col
+
+    def mse(self, data):
+        results = data
+        mn = self.correct_data[self.tr_col].apply(lambda x: (x[0::2] + x[1::2]) / 2)
+        l = np.array(*results[self.res_col].values)
+        r = np.array(*mn.values).reshape(l.shape)
+        return np.mean((l - r) ** 2)
+
+    def prepare_out(self, data):
+        return {'mse': self.mse(data)}
+
+    def prepare_pred(self, data):
+        self.correct_data = data.copy()
+        data['n_seq'] = data['n_seq'].apply(lambda x: x[1:-1])
+        data['c_seq'] = data['c_seq'].apply(lambda x: x[1:-1])
+        seq = []
+        for n, r in data.iterrows():
+            seq.append(r['n_seq'] + r['c_seq'])
+        return seq
 
 
 class ImportanceDescriber:
@@ -11,14 +48,7 @@ class ImportanceDescriber:
         self.res_col = res_col
         self.out_col = out_col
         self.kind = out_kind
-        self.model= model
-
-    def mse(self, tr, exp):
-        sm = 0
-        for t, e in zip(tr, exp):
-            sm += (t - e) ** 2
-        res = sm / len(exp)
-        return res if isinstance(res, float) else res[0]
+        self.model = model
 
     def feature_importance(self, out):
         result = out
@@ -44,7 +74,7 @@ class ImportanceDescriber:
         data['new_pred'] = results[self.res_col]
         result['seq_id'] = range(len(result))
         data = pd.merge(result, data, on=['seq_id']).drop(columns=['seq'])
-        data['diff'] = data.apply(lambda x: self.mse(x['N_pred'], x['new_pred']), axis=1)
+        data['diff'] = data.apply(lambda x: Metrics.mse(x['N_pred'], x['new_pred']), axis=1)
         per_seq = data.groupby(['seq_id', 'pos', 'source_aa'], as_index=False). \
             agg({'diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'], ascending=[True, True, False])
         per_seq.set_index(['seq_id'], inplace=True, drop=False)
@@ -58,15 +88,9 @@ class ImportanceDescriber:
             return self.feature_importance(out)
         elif self.kind == 'plot_seq':
             return self.plot_importance_per_seq(out)
-        else:
-            self.plot_importance_overall(out)
 
     def plot_importance_per_seq(self, out, limit=20):
         total, per_seq = self.feature_importance(out)
         g = sns.FacetGrid(per_seq, row="seq_id")
         g.map(sns.barplot, "source_aa", 'diff')
         return g
-
-    def plot_importance_overall(self, out):
-        total, per_seq = self.feature_importance(out)
-        # for ind, row in per_seq.iterrows():
