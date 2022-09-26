@@ -18,9 +18,6 @@ class Predictor:
         self.model_dir = os.path.join(os.path.basename(self.models_dir), self.model)
         self.model_data_dir = model_data_dir or self.default_model_dir()
         self.config = config
-        self.config.set_task(self.model, self.version)
-        self.config.model_config['data_dir'] = self.model_data_dir
-        self.config.set_test_ids()
         self.processors = processors or {'msa': MsaProcessor,
                                          'fasta': FastaProcessor,
                                          'samcc_test': SamccTestProcessor,
@@ -54,11 +51,19 @@ class Predictor:
             return result
         return result[0]
 
-    def train(self, data, ids=None, val_ids=None):
-        base = self.model_dir.replace(os.sep, '.')
-        self.config.operator.parallel = True
+    def _prepare_config_for_train(self, ids, val_ids):
+        self.config.set_task(self.model, self.version)
+        self.config.model_config['data_dir'] = self.model_data_dir
         self.config.set_val_ids(val_ids)
         self.config.set_ids(ids)
+        self.config.set_test_ids()
+        self.config.operator.parallel = True
+
+    def train(self, data, ids=None, val_ids=None):
+        base = self.model_dir.replace(os.sep, '.')
+        if self.config is None:
+            raise AttributeError("Provide config for train.")
+        self._prepare_config_for_train(ids, val_ids)
         train = importlib.import_module(f"hamp_pred.src.{base}.train")
         result = train.run(data, self.config.dump())
         self.config.as_pickle(os.path.join(self.model_data_dir, 'config.p'))
