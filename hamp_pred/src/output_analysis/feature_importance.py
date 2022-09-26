@@ -23,8 +23,8 @@ class ModelMetrics:
     def mse(self, data):
         results = data
         mn = self.correct_data[self.tr_col].apply(lambda x: (x[0::2] + x[1::2]) / 2)
-        l = np.array(*results[self.res_col].values)
-        r = np.array(*mn.values).reshape(l.shape)
+        l = np.concatenate(results[self.res_col].values)
+        r = np.concatenate(mn.values).reshape(l.shape)
         return np.mean((l - r) ** 2)
 
     def prepare_out(self, data):
