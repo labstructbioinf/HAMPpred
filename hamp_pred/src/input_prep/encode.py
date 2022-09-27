@@ -158,19 +158,29 @@ class MixedEncoder(SequenceEncoder):
 
 
 class RadianEncoder(LabelEncoder):
-    def __init__(self, scale=1):
+    def __init__(self, scale=1, max_size=360, unknown=1000):
         self.scale = scale
+        self.max_size = max_size
+        self.outlier = np.array([2,2])
+        self.unknown = unknown
 
     def encode(self, labels, *args, **kwargs):
         labels = self.as_numpy_array(labels)
-        print(labels)
-        return np.concatenate([np.sin(np.deg2rad(labels)), np.cos(np.deg2rad(labels))], axis=-1)
+        exceed = labels[np.any(labels>self.max_size, axis=-1)]
+        result = np.concatenate([np.sin(np.deg2rad(labels)), np.cos(np.deg2rad(labels))], axis=-1)
+        result[exceed] = self.outlier
+        return result
 
     def invert(self, enc):
         labels = self.as_numpy_array(enc)
         res = []
         for row in labels:
-            res.append((np.arctan2(row[:, 0], row[:, 1]) * 180 / np.pi).reshape(len(row), 1))
+            tot = row[np.any(row > 1, axis=-1)]
+            correct = row[tot]
+            full = np.full((len(row), 1), self.unknown)
+            out = (np.arctan2(correct[:, 0], correct[:, 1]) * 180 / np.pi).reshape(len(correct), 1)
+            full[tot] = out
+            res.append(full)
         ret = np.asarray(res)
         return ret
 

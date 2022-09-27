@@ -54,7 +54,7 @@ class ImportanceDescriber:
     def feature_importance(self, out):
         result = out
         seqs = [x for x in result['sequence']]
-        data = {'source_aa': [], 'pos': [], 'seq_id': [], 'seq': [], 'target_aa': []}
+        data = {'source_aa': [], 'pos': [], 'seq_id': [], 'seq': [], 'target_aa': [], 'target_pos': []}
         for pos in range(len(seqs[0])):
             for nn, seq in enumerate(seqs):
                 h_size = len(seq) // 2
@@ -70,6 +70,7 @@ class ImportanceDescriber:
                             data['pos'].append(pos)
                             data['source_aa'].append(seq[pos])
                             data['target_aa'].append(seq[i])
+                            data['target_pos'].append(seq[i])
         data = pd.DataFrame(data)
         results = self.model.predict([x for x in data.seq])[[self.res_col]]
         data['new_pred'] = results[self.res_col]
