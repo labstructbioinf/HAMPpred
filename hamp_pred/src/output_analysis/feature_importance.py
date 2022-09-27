@@ -89,6 +89,8 @@ class ImportanceDescriber:
             return self.feature_importance(out)
         elif self.kind == 'plot_seq':
             return self.plot_importance_per_seq(out)
+        elif self.kind == 'heatmap':
+            return self.to_heatmap(out)
 
     def plot_importance_per_seq(self, out, limit=20):
         total, per_seq = self.feature_importance(out)
