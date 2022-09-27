@@ -166,7 +166,7 @@ class RadianEncoder(LabelEncoder):
 
     def encode(self, labels, *args, **kwargs):
         labels = self.as_numpy_array(labels)
-        exceed = labels[np.any(labels>self.max_size, axis=-1)]
+        exceed = np.any(labels>self.max_size, axis=-1)
         result = np.concatenate([np.sin(np.deg2rad(labels)), np.cos(np.deg2rad(labels))], axis=-1)
         result[exceed] = self.outlier
         return result
@@ -175,11 +175,11 @@ class RadianEncoder(LabelEncoder):
         labels = self.as_numpy_array(enc)
         res = []
         for row in labels:
-            tot = row[np.any(row > 1, axis=-1)]
-            correct = row[tot]
+            tot = np.any(row > 1, axis=-1)
+            correct = row[~tot]
             full = np.full((len(row), 1), self.unknown)
             out = (np.arctan2(correct[:, 0], correct[:, 1]) * 180 / np.pi).reshape(len(correct), 1)
-            full[tot] = out
+            full[~tot] = out
             res.append(full)
         ret = np.asarray(res)
         return ret
