@@ -32,12 +32,13 @@ class Predictor:
     def default_model_dir(self):
         pos = os.path.dirname(__file__)
         if self.version:
-            return os.path.join(pos, '../../', f'data/output/weights/{self.model}/{self.version}')
-        return os.path.join(pos, '../../', f'data/output/weights/{self.model}')
+            return os.path.abspath(os.path.join(pos, '../../', f'data/output/weights/{self.model}/{self.version}'))
+        return os.path.abspath(os.path.join(pos, '../../', f'data/output/weights/{self.model}'))
 
     def predict(self, data, with_model=False, **kwargs):
         base = self.model_dir.replace(os.sep, '.')
         predict = importlib.import_module(f"hamp_pred.src.{base}.predict")
+        self._prepare_config_for_predict()
         last_config = PredictionConfig.from_pickle(os.path.join(self.model_data_dir, 'config.p'))
         if self.config:
             last_config = last_config.merge_with(self.config, favour_other=True)
@@ -58,6 +59,10 @@ class Predictor:
         self.config.set_ids(ids)
         self.config.set_test_ids()
         self.config.operator.parallel = True
+
+    def _prepare_config_for_predict(self):
+        self.config = self.config or PredictionConfig(None, None)
+        self.config.model_config['data_dir'] = self.model_data_dir
 
     def train(self, data, ids=None, val_ids=None):
         base = self.model_dir.replace(os.sep, '.')

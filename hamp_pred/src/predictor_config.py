@@ -60,8 +60,17 @@ class PredictionConfig:
         for att in dir(self):
             if not att.startswith('__'):
                 if favour_other:
-                    if hasattr(other, att):
-                        setattr(self, att, getattr(other, att))
+                    if callable(getattr(self, att)):
+                        continue
+                    if hasattr(other, att) and getattr(other, att) is not None:
+                        obb = getattr(self, att)
+                        if isinstance(obb, dict):
+                            for key, value in getattr(other, att).items():
+                                if value is not None:
+                                    obb[key] = value
+                            setattr(self, att, obb)
+                        else:
+                            setattr(self, att, getattr(other, att))
         return self
 
 

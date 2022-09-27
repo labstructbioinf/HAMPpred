@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from Bio.PDB.Polypeptide import aa1
 
 
 class Metrics:
@@ -94,3 +95,24 @@ class ImportanceDescriber:
         g = sns.FacetGrid(per_seq, row="seq_id")
         g.map(sns.barplot, "source_aa", 'diff')
         return g
+
+    def to_heatmap(self, out):
+        res = []
+        one_seq = False
+        out, per_seq = self.feature_importance(out)
+        if len(per_seq.seq_id.unique()) == 1:
+            one_seq = True
+        if one_seq:
+            return np.array([np.array(out['diff'].values / out['diff'].sum()) for i in range(len(out))]), list(
+                out['source_aa'].values)
+        for ind, group in out.groupby('pos'):
+            aa_pos = []
+            for aa in aa1:
+                r = group[group['source_aa'] == aa]['diff']
+                if not r.empty:
+                    aa_pos.append(r.iloc[0])
+                else:
+                    aa_pos.append(0)
+            aa_pos = np.array(aa_pos) / sum(np.array(aa_pos))
+            res.append(aa_pos)
+        return np.array(res), list(aa1)
