@@ -11,7 +11,7 @@ class Tester(RotTester):
 
     def get_crick_f1(self, test, prediction):
         adjuster = PredictionAdjust()
-        prediction['true'] = test['true'].values
+        prediction['true'] = test['full_crick'].values
         correct = adjuster.get_with_f1_depend(prediction)
         tr, pr, pos_tr, pos_pr = adjuster.get_crick_tr_pred(correct)
         metrics = {'f1_coverage': len(correct) /len(prediction),
