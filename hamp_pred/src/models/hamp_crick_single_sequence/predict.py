@@ -39,5 +39,5 @@ def run(sequences, config=None):
     data['detected_helices_crick'] = helix_crick
     data['predicted_rotation'] = data['detected_helices_crick'].apply(lambda x: adjuster.get_rotation(*x))
     if config.get('is_test', False):
-        return tester.get_metrics(test_data, sequences)
+        return tester.get_metrics(test_data, data)
     return (data,) + results[1:]
