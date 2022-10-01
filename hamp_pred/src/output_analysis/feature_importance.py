@@ -3,15 +3,7 @@ import pandas as pd
 import seaborn as sns
 from Bio.PDB.Polypeptide import aa1
 
-
-class Metrics:
-    @staticmethod
-    def mse(tr, exp):
-        sm = 0
-        for t, e in zip(tr, exp):
-            sm += (t - e) ** 2
-        res = sm / len(exp)
-        return res if isinstance(res, float) else res[0]
+from hamp_pred.src.output_analysis.metrics import Metrics
 
 
 class ModelMetrics:

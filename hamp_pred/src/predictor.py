@@ -47,7 +47,10 @@ class Predictor:
         for kw in kwargs:
             if hasattr(conf['operator'], kw):
                 setattr(conf['operator'], kw, kwargs[kw])
+        if kwargs.get('is_test'):
+            conf.is_test = True
         result = predict.run(data, conf)
+        conf.is_test = False
         if with_model:
             return result
         return result[0]
