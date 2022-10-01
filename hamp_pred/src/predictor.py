@@ -1,13 +1,6 @@
 import importlib
 import os
 
-import numpy as np
-import pandas as pd
-import seaborn
-
-from hamp_pred.src.input_prep.encode import MultiEncoder, OneHotEncoderSeq, RadianEncoder, RadiousPhobosEncoder
-from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
-from hamp_pred.src.models.common.models import BaseConvolutionalWrapper
 from hamp_pred.src.output_analysis.common_processors import FastaProcessor, MsaProcessor, SamccTestProcessor
 from hamp_pred.src.output_analysis.feature_importance import ImportanceDescriber, ModelMetrics
 from hamp_pred.src.predictor_config import PredictionConfig
@@ -111,24 +104,3 @@ class Predictor:
             if hasattr(conf['operator'], kw):
                 setattr(conf['operator'], kw, kwargs[kw])
         return predict.model(data, conf)[0]
-
-data = pd.read_pickle('/Users/awinski/PycharmProjects/HAMPred/data/input/full_alpha_data.p').head(2)
-operator = MultiChainOperator(MultiEncoder([RadiousPhobosEncoder(), OneHotEncoderSeq()]), SeqWindow(140, 140), RadianEncoder(100),  SeqWindow(140, 140, null_char=[[0]]),
-                                      parallel=True, n_chains=1, chain_names=('seq', ))
-model_conf = model_config = {
-    'activation': 'linear',
-    'norm': True,
-    'n_layers': 1,
-    'kernel_sizes': (3, 5, 7),
-    'lstm': 2,
-    'dense': 1,
-    'reshape_out': False,
-    'epochs': 600
-}
-conf = PredictionConfig(BaseConvolutionalWrapper, operator, model_conf)
-# seq = "LKELVQGVQRIIGELITSFNLM"
-# dd = pd.DataFrame({'train_seq': [seq], 'n_crick_mut': n, 'c_crick_mut': c} )
-pred = Predictor('hamp_crick_single_sequence', config=conf)
-# pred.train(data)
-w = pred.predict([data.iloc[0]['sequence']])
-pass
