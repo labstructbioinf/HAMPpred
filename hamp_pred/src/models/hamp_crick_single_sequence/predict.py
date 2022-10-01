@@ -1,11 +1,16 @@
 from hamp_pred.src.models.common.models import BaseLinearWrapper
 from hamp_pred.src.models.hamp_crick_single_sequence.adjust_prediction import PredictionAdjust
+from hamp_pred.src.models.hamp_crick_single_sequence.test import Tester
 
 
 def run(sequences, config=None):
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
     adjuster = PredictionAdjust()
     n_chains, features = operator.n_chains, 2
+    if config.get('is_test', False):
+        tester = Tester()
+        test_data = sequences
+        sequences = tester.get_squences(sequences)
     to_pred = operator.get_for_prediction(sequences)
     model = model or BaseLinearWrapper(config=config)
     inp_shape = to_pred.shape[1], to_pred.shape[-1]
@@ -33,4 +38,6 @@ def run(sequences, config=None):
     data['detected_helices'] = data.apply(lambda x: get_helices(x), axis=1)
     data['detected_helices_crick'] = helix_crick
     data['predicted_rotation'] = data['detected_helices_crick'].apply(lambda x: adjuster.get_rotation(*x))
+    if config.get('is_test', False):
+        return tester.get_metrics(test_data, sequences)
     return (data,) + results[1:]

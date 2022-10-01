@@ -74,19 +74,22 @@ class PredictionAdjust:
             return mse
         return None
 
-    def get_crick_tr_pred(self, data, unk=10000):
+    def get_crick_tr_pred(self, data):
         pr = []
         tr = []
+        pos_tr = []
+        pos_pr = []
         for ind, row in data.iterrows():
             tpp, tps = [], []
             for t, p in zip(row['true'], row['prediction']):
-                v = p * 10 if p == 1000 else p
-                if t != unk and v != unk:
+                if t != self.unknown and p != self.unknown:
                     tpp.append(t)
-                    tps.append(v)
+                    tps.append(p)
             tr.append(np.mean(tpp))
             pr.append(np.mean(tps))
-        return tr, pr
+            pos_tr.extend(tpp)
+            pos_pr.extend(tps)
+        return tr, pr, pos_tr, pos_pr
 
     def get_rot_tr_pred(self, data):
         pr = []
