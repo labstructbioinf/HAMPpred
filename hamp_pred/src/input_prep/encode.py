@@ -21,7 +21,6 @@ class SequenceEncoder:
         for seq in many:
             c += 1
             results.append(self.encode(seq))
-            print(f'Encoded {c}/{k} sequences')
         return np.array(results)
 
 

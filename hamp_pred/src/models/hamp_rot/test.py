@@ -29,7 +29,7 @@ class Tester:
                    'true_pos_rot': pos_rot_true,
                    'pred_pos_rot': pos_rot_pred,
                    'true_mean_rot': mean_rot_true,
-                   'pred_mean_ort': mean_pred}
+                   'pred_mean_rot': mean_pred}
         return metrics
 
     def get_squences(self, data):
