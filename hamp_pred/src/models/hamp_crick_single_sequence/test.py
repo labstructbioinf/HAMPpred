@@ -4,7 +4,7 @@ from hamp_pred.src.models.hamp_rot.test import Tester as RotTester, Metrics
 
 class Tester(RotTester):
     def __init__(self, out_column='predicted_rotation', ignored_vals=None):
-        super().__init__(out_column=out_column, ignored_vals=ignored_vals or {1000})
+        super().__init__(out_column=out_column, ignored_vals=ignored_vals or {10000})
 
     def get_squences(self, data):
         return list([x for x in data['full_sequence']])
