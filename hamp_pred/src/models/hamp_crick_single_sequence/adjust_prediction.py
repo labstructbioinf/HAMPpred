@@ -3,7 +3,7 @@ import numpy as np
 
 class PredictionAdjust:
     def __init__(self, unknown=10000, max_helices=2, same_helices_length=True,
-                 min_f1=0.8, max_unknown=0.49):
+                 min_f1=0.8, max_unknown=0.51):
         self.unknown = unknown
         self.max_helices = max_helices
         self.same_helices_length = same_helices_length
@@ -131,7 +131,7 @@ class PredictionAdjust:
             if not seg.count(self.unknown) > len(seg) * self.max_unknown:
                 new_segments.append(seg)
                 new_data.append(ends[n])
-        if not new_segments:
+        if len(new_segments) <= 1:
             return new_segments, new_data
         org = [(n, seq) for n, seq in enumerate(segments)]
         org.sort(key=len, reverse=True)
