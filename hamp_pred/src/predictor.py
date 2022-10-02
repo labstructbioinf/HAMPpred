@@ -1,6 +1,8 @@
 import importlib
 import os
 
+import pandas as pd
+
 from hamp_pred.src.output_analysis.common_processors import FastaProcessor, MsaProcessor, SamccTestProcessor
 from hamp_pred.src.output_analysis.feature_importance import ImportanceDescriber, ModelMetrics
 from hamp_pred.src.predictor_config import PredictionConfig
@@ -50,7 +52,9 @@ class Predictor:
         if kwargs.get('is_test'):
             conf['is_test'] = True
         result = predict.run(data, conf)
-        conf['is_test'] = False
+        if kwargs.get('is_test'):
+            conf['is_test'] = False
+            return result
         if with_model:
             return result
         return result[0]

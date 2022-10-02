@@ -4,8 +4,9 @@ from hamp_pred.src.output_analysis.metrics import Metrics
 
 
 class Tester:
-    def __init__(self, out_column='prediction'):
+    def __init__(self, out_column='prediction', ignored_vals=None):
         self.out_column = out_column
+        self.ignored_vals = ignored_vals
 
     def get_metrics(self, test, prediction):
         mean_rot_true, mean_pred = [], []
@@ -15,14 +16,16 @@ class Tester:
             n_rot, c_rot = row['n_crick_mut'], row['c_crick_mut']
             n_rot = (n_rot[::2] + n_rot[1::2]) / 2
             c_rot = (c_rot[::2] + c_rot[1::2]) / 2
+            pred = prediction.iloc[n][self.out_column]
+            if not pred:
+                continue
             mean_rot_true.append(np.mean(n_rot - c_rot))
             pos_rot_true.extend(list(n_rot - c_rot))
-            prediction = prediction.iloc[n]['prediction']
-            prediction = list(np.reshape(len(prediction)))
-            mean_pred.append(np.mean(prediction))
-            pos_rot_pred.extend(prediction)
-        metrics = {'mse_seq': Metrics.mse(mean_rot_true, mean_pred),
-                   'mse_pos': Metrics.mse(pos_rot_true, pos_rot_pred),
+            pred = list(np.reshape(pred, len(pred)))
+            mean_pred.append(np.mean(pred))
+            pos_rot_pred.extend(pred)
+        metrics = {'mse_seq': Metrics.mse(mean_rot_true, mean_pred, ignore=self.ignored_vals),
+                   'mse_pos': Metrics.mse(pos_rot_true, pos_rot_pred, ignore=self.ignored_vals),
                    'true_pos_rot': pos_rot_true,
                    'pred_pos_rot': pos_rot_pred,
                    'true_mean_rot': mean_rot_true,
