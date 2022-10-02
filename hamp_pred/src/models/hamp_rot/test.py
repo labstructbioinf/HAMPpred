@@ -44,5 +44,4 @@ class Tester:
         for key, value in metrics.items():
             if isinstance(value, list) or isinstance(value, tuple):
                 metrics[key] = np.array(value) / self.scale
-
-
+        return metrics
