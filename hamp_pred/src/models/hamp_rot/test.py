@@ -15,19 +15,18 @@ class Tester:
 
         for n, (ind, row) in enumerate(test.iterrows()):
             n_rot, c_rot = row['n_crick_mut'], row['c_crick_mut']
-            n_rot = (n_rot[::2] + n_rot[1::2]) / 2
-            c_rot = (c_rot[::2] + c_rot[1::2]) / 2
+            rot = n_rot - c_rot
+            rot = (rot + 180) % 360 - 180
+            rot = (rot[::2] + rot[1::2]) / 2
             pred = prediction.iloc[n][self.out_column]
             if pred is None:
                 continue
-            mean_rot_true.append(np.mean(n_rot - c_rot))
-            pos_rot_true.extend(list(n_rot - c_rot))
+            mean_rot_true.append(np.mean(rot))
+            pos_rot_true.extend(rot)
             pred = list(np.reshape(pred, len(pred)))
             mean_pred.append(np.mean(pred))
             pos_rot_pred.extend(pred)
-        metrics = {'mse_seq': Metrics.mse(mean_rot_true, mean_pred, ignore=self.ignored_vals),
-                   'mse_pos': Metrics.mse(pos_rot_true, pos_rot_pred, ignore=self.ignored_vals),
-                   'true_pos_rot': pos_rot_true,
+        metrics = {'true_pos_rot': pos_rot_true,
                    'pred_pos_rot': pos_rot_pred,
                    'true_mean_rot': mean_rot_true,
                    'pred_mean_rot': mean_pred}
@@ -44,4 +43,6 @@ class Tester:
         for key, value in metrics.items():
             if isinstance(value, list) or isinstance(value, tuple):
                 metrics[key] = np.array(value) / self.scale
+        metrics['mse_seq'] = Metrics.mse(metrics['true_mean_rot'], metrics['pred_mean_rot'], ignore=self.ignored_vals)
+        metrics['mse_pos'] = Metrics.mse(metrics['true_pos_rot'], metrics['pred_pos_rot'], ignore=self.ignored_vals)
         return metrics
