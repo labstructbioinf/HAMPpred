@@ -17,7 +17,7 @@ class Tester:
             n_rot = (n_rot[::2] + n_rot[1::2]) / 2
             c_rot = (c_rot[::2] + c_rot[1::2]) / 2
             pred = prediction.iloc[n][self.out_column]
-            if not pred:
+            if pred is None:
                 continue
             mean_rot_true.append(np.mean(n_rot - c_rot))
             pos_rot_true.extend(list(n_rot - c_rot))
