@@ -22,5 +22,5 @@ def run(sequences, config=None):
     prediction = np.concatenate([prediction, prediction], axis=-1)
     result = operator.get_from_prediction(prediction, n_features=2, shrink_factor=2), md, to_pred
     if config.get('is_test', False):
-        return tester.get_metrics(test_data, result)
+        return tester.get_metrics(test_data, result[0])
     return result
