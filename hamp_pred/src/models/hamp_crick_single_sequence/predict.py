@@ -5,10 +5,10 @@ from hamp_pred.src.models.hamp_crick_single_sequence.test import Tester
 
 def run(sequences, config=None):
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
-    adjuster = PredictionAdjust()
+    adjuster = config.get('pred_adjuster', PredictionAdjust())
     n_chains, features = operator.n_chains, 2
     if config.get('is_test', False):
-        tester = Tester()
+        tester = config.get('tester', Tester())
         test_data = sequences
         sequences = tester.get_squences(sequences)
     to_pred = operator.get_for_prediction(sequences)

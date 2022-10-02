@@ -2,7 +2,7 @@ import numpy as np
 
 
 class PredictionAdjust:
-    def __init__(self, unknown=1000, max_helices=2, same_helices_length=True,
+    def __init__(self, unknown=10000, max_helices=2, same_helices_length=True,
                  min_f1=0.8, max_unknown=0.49):
         self.unknown = unknown
         self.max_helices = max_helices
