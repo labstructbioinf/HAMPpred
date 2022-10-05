@@ -71,7 +71,7 @@ class ImportanceDescriber:
         result['seq_id'] = range(len(result))
         data = pd.merge(result, data, on=['seq_id']).drop(columns=['seq'])
         data['diff'] = data.apply(lambda x: Metrics.mse_f1(x[self.res_col], x['new_pred']), axis=1)
-        data['pos_diff'] = data.apply(lambda x: (x['new_pred'][x['pos']] - x[self.res_col][x['pos']]) ** 2)
+        data['pos_diff'] = data.apply(lambda x: (x['new_pred'][x['pos']] - x[self.res_col][x['pos']]) ** 2, axis=1)
         data.dropna(subset=['diff'], inplace=True)
         per_seq = data.groupby(['seq_id', 'pos', 'source_aa'], as_index=False). \
             agg({'diff': 'mean', 'pos_diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'],
