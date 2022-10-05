@@ -1,9 +1,14 @@
+import numpy as np
+
+
 class Metrics:
     @staticmethod
     def mse(tr, exp, ignore=None):
         sm = 0
         ignore = ignore or set()
         for t, e in zip(tr, exp):
+            t = t if isinstance(t, (float, int, np.int64, np.float64, np.int32, np.float32)) else t[0]
+            e = e if isinstance(e, (float, int, np.int64, np.float64, np.int32, np.float32)) else e[0]
             if ignore and (t in ignore or e in ignore):
                 continue
             sm += (t - e) ** 2
@@ -21,6 +26,8 @@ class Metrics:
                 unk_pred += 1
             if t != sep and e != sep:
                 common += 1
+        if unk_tr == 0 or unk_pred == 0:
+            return 0
         rec = common / unk_tr
         prec = common / unk_pred
         f1 = 2 / ((1 / rec) + (1 / prec))
