@@ -37,11 +37,13 @@ class ImportanceDescriber:
     def __init__(self, res_col='N_pred',
                  out_col='importance',
                  out_kind='data',
+                 stats_col='diff',
                  model=None):
         self.res_col = res_col
         self.out_col = out_col
         self.kind = out_kind
         self.model = model
+        self.stats_col = stats_col
 
     def feature_importance(self, out):
         result = out
@@ -69,14 +71,17 @@ class ImportanceDescriber:
         result['seq_id'] = range(len(result))
         data = pd.merge(result, data, on=['seq_id']).drop(columns=['seq'])
         data['diff'] = data.apply(lambda x: Metrics.mse_f1(x[self.res_col], x['new_pred']), axis=1)
+        data['pos_diff'] = data.apply(lambda x: (x['new_pred'][x['pos']] - x[self.res_col][x['pos']]) ** 2)
         data.dropna(subset=['diff'], inplace=True)
         per_seq = data.groupby(['seq_id', 'pos', 'source_aa'], as_index=False). \
-            agg({'diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'], ascending=[True, True, False])
+            agg({'diff': 'mean', 'pos_diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'],
+                                                                  ascending=[True, True, False])
         per_seq.set_index(['seq_id'], inplace=True, drop=False)
-        total = data.groupby(['pos', 'source_aa'], as_index=False).agg({'diff': 'mean'}).sort_values(by=['pos', 'diff'],
-                                                                                                     ascending=[True,
-                                                                                                                False])
-        return total, per_seq
+        total = data.groupby(['pos', 'source_aa'], as_index=False).agg(
+            {'diff': 'mean', 'pos_diff': 'mean'}).sort_values(by=['pos', 'diff'],
+                                                              ascending=[True,
+                                                                         False])
+        return total, per_seq, data
 
     def prepare_out(self, out):
         if self.kind == 'data':
@@ -87,7 +92,7 @@ class ImportanceDescriber:
             return self.to_heatmap(out)
 
     def plot_importance_per_seq(self, out, limit=20):
-        total, per_seq = self.feature_importance(out)
+        total, per_seq, data = self.feature_importance(out)
         g = sns.FacetGrid(per_seq, row="seq_id")
         g.map(sns.barplot, "source_aa", 'diff')
         return g
@@ -95,16 +100,17 @@ class ImportanceDescriber:
     def to_heatmap(self, out):
         res = []
         one_seq = False
-        out, per_seq = self.feature_importance(out)
+        out, per_seq, data = self.feature_importance(out)
         if len(per_seq.seq_id.unique()) == 1:
             one_seq = True
         if one_seq:
-            return np.array([np.array(out['diff'].values / out['diff'].sum()) for i in range(len(out))]), list(
+            return np.array(
+                [np.array(out[self.stats_col].values / out[self.stats_col].sum()) for i in range(len(out))]), list(
                 out['source_aa'].values)
         for ind, group in out.groupby('pos'):
             aa_pos = []
             for aa in aa1:
-                r = group[group['source_aa'] == aa]['diff']
+                r = group[group['source_aa'] == aa][self.stats_col]
                 if not r.empty:
                     aa_pos.append(r.iloc[0])
                 else:
