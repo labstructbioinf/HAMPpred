@@ -9,3 +9,25 @@ class Metrics:
             sm += (t - e) ** 2
         res = sm / len(exp)
         return res if isinstance(res, float) else res[0]
+
+    @staticmethod
+    def f1(tr, exp, sep=10000):
+        unk_tr, unk_pred = 0, 0
+        common = 0
+        for t, e in zip(tr, exp):
+            if t != sep:
+                unk_tr += 1
+            if e != sep:
+                unk_pred += 1
+            if t != sep and e != sep:
+                common += 1
+        rec = common / unk_tr
+        prec = common / unk_pred
+        f1 = 2 / ((1 / rec) + (1 / prec))
+        return f1
+
+    @staticmethod
+    def mse_f1(tr, exp, sep=10000, limit=0.8):
+        if Metrics.f1(tr, exp, sep=sep) < limit:
+            return None
+        return Metrics.mse(tr, exp, ignore={sep})

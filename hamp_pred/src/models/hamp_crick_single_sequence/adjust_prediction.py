@@ -166,5 +166,5 @@ class PredictionAdjust:
             return None
         f1, mse = self._get_f1_and_mse(left, right)
         if f1 > self.min_f1:
-            return [x-y for x, y in zip(left, right) if x != self.unknown and y!= self.unknown]
+            return [x - y for x, y in zip(left, right) if x != self.unknown and y != self.unknown]
         return None
