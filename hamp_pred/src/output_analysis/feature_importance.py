@@ -48,9 +48,11 @@ class ImportanceDescriber:
     def feature_importance(self, out):
         result = out
         seqs = [x for x in result['sequence']]
+        longest = max(seqs, key=len)
         data = {'source_aa': [], 'pos': [], 'seq_id': [], 'seq': [], 'target_aa': [], 'target_pos': []}
-        for pos in range(len(seqs[0])):
+        for pos in range(len(longest)):
             for nn, seq in enumerate(seqs):
+                seq = seq + ('X' * (len(longest) - len(seq)))
                 h_size = len(seq) // 2
                 for i in range(len(seq)):
                     if (pos >= h_size and i >= h_size) or (pos < h_size and i < h_size):

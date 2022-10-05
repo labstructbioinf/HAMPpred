@@ -35,6 +35,15 @@ class Metrics:
 
     @staticmethod
     def mse_f1(tr, exp, sep=10000, limit=0.8):
+        tr, f1 = Metrics.adjust_length(tr, exp, sep=sep)
         if Metrics.f1(tr, exp, sep=sep) < limit:
             return None
         return Metrics.mse(tr, exp, ignore={sep})
+
+    @staticmethod
+    def adjust_length( tr, exp, sep = 10000):
+        if len(tr) < len(exp):
+            tr = list(tr) + ([sep] * (len(exp) - len(tr)))
+        elif len(exp) < len(tr):
+            exp = list(tr) + ([sep] * (len(tr) - len(exp)))
+        return tr, exp
