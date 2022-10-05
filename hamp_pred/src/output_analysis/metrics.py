@@ -26,7 +26,7 @@ class Metrics:
                 unk_pred += 1
             if t != sep and e != sep:
                 common += 1
-        if unk_tr == 0 or unk_pred == 0:
+        if unk_tr == 0 or unk_pred == 0 or common == 0:
             return 0
         rec = common / unk_tr
         prec = common / unk_pred
