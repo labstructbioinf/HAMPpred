@@ -38,14 +38,15 @@ class ImportanceDescriber:
                  out_col='importance',
                  out_kind='data',
                  stats_col='diff',
-                 model=None):
+                 model=None, mode='permutation'):
         self.res_col = res_col
         self.out_col = out_col
         self.kind = out_kind
         self.model = model
         self.stats_col = stats_col
+        self.mode = mode
 
-    def feature_importance(self, out):
+    def permutation_feature_importance(self, out):
         result = out
         seqs = [x for x in result['sequence']]
         longest = max(seqs, key=len)
@@ -86,16 +87,51 @@ class ImportanceDescriber:
                                                                          False])
         return total, per_seq, data
 
+    def _generate_sequences(self, seq, seq_id, positions_dict=None):
+        positions_dict = positions_dict or {}
+        l_seq = list(seq)
+        data = {'source_aa': [], 'pos': [], 'seq_id': [], 'seq': [], 'target_aa': []}
+        for pos, aa in enumerate(l_seq):
+            for repl in positions_dict.get(pos, aa1):
+                prv = l_seq[pos]
+                l_seq[pos] = repl
+                data['seq'].append(''.join(l_seq))
+                data['seq_id'].append(seq_id)
+                data['pos'].append(pos)
+                data['source_aa'].append(seq[pos])
+                data['target_aa'].append(repl)
+                l_seq[pos] = prv
+        return pd.DataFrame(data)
+
+    def replacement_feature_importance(self, out):
+        seqs = [x for x in out['sequence']]
+        out['seq_id'] = range(len(out))
+        new_seqs = []
+        for pos, seq in enumerate(seqs):
+            new_seqs.append(self._generate_sequences(seq, pos))
+        data = pd.concat(new_seqs)
+        result = self.model.predict([x for x in data.seq])[[self.res_col]]
+        data['new_pred'] = result[self.res_col]
+        data = pd.merge(data, out, on=['seq_id'])
+        data['diff'] = data.apply(lambda x: np.abs(np.mean(x[self.res_col]) -np.mean(x['new_pred'])), axis=1)
+        per_seq = data.groupby(['seq_id', 'pos', 'source_aa'], as_index=False). \
+            agg({'diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'],
+                                                                  ascending=[True, True, False])
+        per_seq.set_index(['seq_id'], inplace=True, drop=False)
+        total = data.groupby(['pos', 'source_aa'], as_index=False).agg(
+            {'diff': 'mean'}).sort_values(by=['pos', 'diff'], ascending=[True, False])
+        return total, per_seq, None
+
     def prepare_out(self, out):
         if self.kind == 'data':
-            return self.feature_importance(out)
+            return getattr(self, f'{self.mode}_feature_importance')(out)
         elif self.kind == 'plot_seq':
             return self.plot_importance_per_seq(out)
         elif self.kind == 'heatmap':
             return self.to_heatmap(out)
 
     def plot_importance_per_seq(self, out, limit=20):
-        total, per_seq, data = self.feature_importance(out)
+        total, per_seq, data = getattr(self, f'{self.mode}_feature_importance')(out)
         g = sns.FacetGrid(per_seq, row="seq_id")
         g.map(sns.barplot, "source_aa", 'diff')
         return g
@@ -103,7 +139,7 @@ class ImportanceDescriber:
     def to_heatmap(self, out):
         res = []
         one_seq = False
-        out, per_seq, data = self.feature_importance(out)
+        out, per_seq, data = getattr(self, f'{self.mode}_feature_importance')(out)
         if len(per_seq.seq_id.unique()) == 1:
             one_seq = True
         if one_seq:
@@ -121,3 +157,4 @@ class ImportanceDescriber:
             aa_pos = np.array(aa_pos) / sum(np.array(aa_pos))
             res.append(aa_pos)
         return np.array(res), list(aa1)
+

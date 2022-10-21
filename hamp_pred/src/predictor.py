@@ -7,12 +7,11 @@ from hamp_pred.src.predictor_config import PredictionConfig
 
 
 class Predictor:
-
+    pos = os.path.dirname(__file__)
+    models_dir = os.path.join(pos, 'models')
     def __init__(self, model, version=None,
                  model_data_dir=None,
                  config=None, infra=None, processors=None):
-        pos = os.path.dirname(__file__)
-        self.models_dir = os.path.join(pos, 'models')
         self.model = model
         self.version = version
         self.model_dir = os.path.join(os.path.basename(self.models_dir), self.model)
@@ -111,3 +110,7 @@ class Predictor:
             if hasattr(conf['operator'], kw):
                 setattr(conf['operator'], kw, kwargs[kw])
         return predict.model(data, conf)[0]
+
+    @classmethod
+    def get_models_info(cls):
+        return [{"name": mod } for mod in set(os.listdir(cls.models_dir)).difference({'common'}) if not mod.startswith('__')]
