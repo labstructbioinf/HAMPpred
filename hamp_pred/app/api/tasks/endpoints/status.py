@@ -11,7 +11,6 @@ class TaskStatus(Resource):
     @ns.doc('Check results')
     def get(self, task_id):
         res = AsyncResult(task_id)
-        print(res.status,res.get())
         if res.ready():
             return res.get()
         else:
