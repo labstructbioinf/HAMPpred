@@ -1,39 +1,3 @@
-# HAMPred
-
-## Description
-
-This is library used to train and predict structural features of hamp domains from the sequence
-
-## Setup
-
-Create virtual env and then install requirements
-
-```
-pip install -r requirements.txt
-```
-
-## Example Usage
-
-### Command line
-
-- Predict
-
-````
-python hamp_pred/scripts/predict.py --model_name two_helix_crdev --data_kind msa --save_path my_msa.p
-````
-
-This will create matrix with predicted crdev for every sequence in MSA.
-
-### REST Api
-
-To start api server run:
-```bash
-docker compose up -d --build
-```
-
-Api server will be available on: http://localhost:8080/api.
-Example rotation prediction using api. 
-```python
 import json
 import time
 
@@ -61,4 +25,3 @@ print("PREDICTED crick angle:")
 print(results.json()[0]['prediction'])
 print("PREDICTED rotation angle:")
 print(results.json()[0]['predicted_rotation'])
-```

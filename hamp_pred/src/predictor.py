@@ -27,6 +27,8 @@ class Predictor:
             raise ValueError(f"Model path {self.model_dir}. Available:"
                              f"{set(os.listdir(self.models_dir)).difference({'common'})}")
         self.infra = infra
+        if self.config:
+            self.config.predictor = self
 
     def default_model_dir(self):
         pos = os.path.dirname(__file__)
@@ -34,11 +36,15 @@ class Predictor:
             return os.path.abspath(os.path.join(pos, '../../', f'data/output/weights/{self.model}/{self.version}'))
         return os.path.abspath(os.path.join(pos, '../../', f'data/output/weights/{self.model}'))
 
-    def predict(self, data, with_model=False, **kwargs):
+    def predict(self, data, with_model=False, only_encode=False, **kwargs):
         base = self.model_dir.replace(os.sep, '.')
         predict = importlib.import_module(f"hamp_pred.src.{base}.predict")
         self._prepare_config_for_predict()
-        last_config = PredictionConfig.from_pickle(os.path.join(self.model_data_dir, 'config.p'))
+        conf_path = os.path.join(self.model_data_dir, 'config.p')
+        if os.path.exists(conf_path):
+            last_config = PredictionConfig.from_pickle(os.path.join(self.model_data_dir, 'config.p'))
+        else:
+            last_config = self.config
         if self.config:
             last_config = last_config.merge_with(self.config, favour_other=True)
         conf = last_config.dump()
@@ -50,6 +56,8 @@ class Predictor:
             conf['is_test'] = True
         for param in ['tester', 'pred_adjuster']:
             conf[param] = kwargs.get(param)
+        if only_encode:
+            return conf['operator'].get_for_prediction(data)
         result = predict.run(data, conf)
         if kwargs.get('is_test'):
             conf['is_test'] = False

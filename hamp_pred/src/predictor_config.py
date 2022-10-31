@@ -22,6 +22,7 @@ class PredictionConfig:
         self.test_ids = None
         self.val_ids = None
         self.ids = None
+        self.predictor = None
 
     def set_task(self, name, version):
         self.task = name

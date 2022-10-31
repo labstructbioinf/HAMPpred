@@ -14,4 +14,4 @@ class TaskStatus(Resource):
         if res.ready():
             return res.get()
         else:
-            return "progress"
+            return "", 204
