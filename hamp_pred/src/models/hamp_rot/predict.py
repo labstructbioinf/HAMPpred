@@ -11,7 +11,7 @@ def run(sequences, config=None):
     n_chains, features = config.get('n_chains', 2), 2
     operator.n_chains = n_chains
     if config.get('is_test', False):
-        tester = config.get('tester') or Tester()
+        tester = config.get('tester') or Tester(scale=1)
         test_data = sequences
         sequences = tester.get_squences(sequences)
     to_pred = operator.get_for_prediction(sequences)
