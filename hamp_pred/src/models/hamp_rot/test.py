@@ -28,10 +28,8 @@ class Tester:
             mean_rot_true.append(np.mean(rot))
             pos_rot_true.extend(rot)
             pred = np.reshape(pred, len(pred))
-            
-            print(pred.shape)
-            
-            #pred = (pred[::2] + pred[1::2]) / 2
+     
+            pred = (pred[::2] + pred[1::2]) / 2
             
             
             mean_pred.append(np.mean(pred))

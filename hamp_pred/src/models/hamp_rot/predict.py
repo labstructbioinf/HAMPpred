@@ -13,7 +13,7 @@ def run(sequences, config=None):
     if config.get('is_test', False):
         tester = config.get('tester') or Tester(scale=1)
         test_data = sequences
-        sequences = tester.get_squences(sequences)
+        sequences = tester.get_squences(sequences)   
     to_pred = operator.get_for_prediction(sequences)
     model = model or BaseLinearWrapper(config=config)
     inp_shape = to_pred.shape[1], to_pred.shape[-1]
