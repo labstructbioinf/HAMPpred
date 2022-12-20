@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 import pickle
 
 from hamp_pred.src.predictor import Predictor
@@ -10,7 +11,7 @@ def main(args):
     if args.test_sequences:
         result = w.predict(args.test_sequences)
     else:
-        result = w.process_data(args.test_data, kind=args.data_kind)
+        result = w.process_data(args.test_data, kind=args.data_kind, path=args.test_data)
     if args.save_path:
         if args.results_format == 'pickle':
             with open(args.save_path, 'wb') as dp:
@@ -27,7 +28,8 @@ def run():
     parser.add_argument('--model_type', default='base_linear',
                         help='Type of model to use, like linear, cnn, resnet etc.')
     parser.add_argument('--test_sequences', default='', nargs='+')
-    parser.add_argument('--test_data', default='data/input/example_hamp_seq.fasta')
+    parser.add_argument('--test_data', default=pathlib.Path(__file__).parent.parent.parent.joinpath(
+        'data/input/example_hamp_seq.fasta'))
     parser.add_argument('--data_kind', default='fasta',
                         help='Kind of data to process',
                         choices=['msa', 'fasta'])
