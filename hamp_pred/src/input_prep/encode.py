@@ -5,7 +5,7 @@ import numpy as np
 from Bio.PDB.Polypeptide import aa1
 from sklearn.preprocessing import MinMaxScaler
 
-from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
+from hamp_pred.external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
 
 
 class SequenceEncoder:
@@ -94,7 +94,8 @@ class RadiousPhobosEncoder(SequenceEncoder):
 
 
 class OneHotEncoderSeq(SequenceEncoder):
-    def __init__(self, categories='', null_cat='?'):
+    def __init__(self, categories='', null_cat=('?',)):
+        print(categories, aa1)
         cats = categories if categories else aa1
         self._set_params(cats, null_cat)
 
@@ -102,6 +103,7 @@ class OneHotEncoderSeq(SequenceEncoder):
         self.cat_dict = {}
         self.cats = cats
         self.null_char = null_char
+
         for n, c in enumerate(cats + null_char):
             self.cat_dict[c] = n
         self.inv_cat_dict = {val: key for key, val in self.cat_dict.items()}

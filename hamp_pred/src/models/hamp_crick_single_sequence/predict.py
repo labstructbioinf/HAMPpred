@@ -1,9 +1,11 @@
-from hamp_pred.src.models.common.models import BaseLinearWrapper
-from hamp_pred.src.models.hamp_crick_single_sequence.adjust_prediction import PredictionAdjust
-from hamp_pred.src.models.hamp_crick_single_sequence.test import Tester
+from ..common.models import BaseLinearWrapper
+from .adjust_prediction import PredictionAdjust
+from .test import Tester
+from .config import get_config
 
 
 def run(sequences, config=None):
+    config = get_config(config.get('predictor')).dump()
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
     adjuster = config.get('pred_adjuster') or PredictionAdjust()
     n_chains, features = operator.n_chains, 2

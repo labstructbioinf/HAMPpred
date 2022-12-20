@@ -1,0 +1,12 @@
+name: plmblast
+channels:
+  - defaults
+dependencies:
+  - numpy
+  - pandas
+  - keras
+  - paramiko
+  - tensorflow
+  - Bio
+  - seaborn
+  - scikit-learn

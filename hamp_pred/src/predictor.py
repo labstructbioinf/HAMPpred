@@ -56,6 +56,7 @@ class Predictor:
             conf['is_test'] = True
         for param in ['tester', 'pred_adjuster']:
             conf[param] = kwargs.get(param)
+        conf['predictor'] = self
         if only_encode:
             return conf['operator'].get_for_prediction(data)
         result = predict.run(data, conf)

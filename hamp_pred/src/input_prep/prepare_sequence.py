@@ -202,7 +202,7 @@ class MultiChainOperator:
         self._data = data
         return enc
 
-    def get_from_prediction(self, prediction, n_features=1, shrink_factor=1):
+    def get_from_prediction(self, prediction, n_features=1, shrink_factor=1, result_col='prediction'):
         xp = self._data.copy()
         for helix_pos, prep in enumerate(self._prep_chains):
             helix = prediction[:, :, helix_pos * n_features: (helix_pos + 1) * n_features]
@@ -222,7 +222,7 @@ class MultiChainOperator:
                         res.append(lk)
             return np.concatenate(res)
 
-        xp['prediction'] = xp.apply(lambda x: merge(x), axis=1)
+        xp[result_col] = xp.apply(lambda x: merge(x), axis=1)
         return xp
 
     def get_for_train(self, X, y=None, ids=None,

@@ -3,7 +3,7 @@ import pickle
 
 from Bio import SeqIO
 
-from external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
+from hamp_pred.external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
 from hamp_pred.src.input_prep.encode import MixedEncoder, OneHotEncoderSeq, RadianEncoder
 from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
 from hamp_pred.src.models.common.models import BaseConvolutionalWrapper, BaseLinearWrapper
