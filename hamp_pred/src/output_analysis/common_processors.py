@@ -6,7 +6,7 @@ from hamp_pred.src.input_prep.msa import Msa
 
 
 class MsaProcessor:
-    def __init__(self, path,  model=None):
+    def __init__(self, path, model=None):
         self.path = path
         self.name = 'msa'
 

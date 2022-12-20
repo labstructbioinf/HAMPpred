@@ -103,7 +103,8 @@ class MultiChainOperator:
         self.sep = sep
         self.solo_helix = solo_helix
         self.auto_split = auto_split
-        self.chain_names = chain_names if len(chain_names) == self.n_chains else [str(f'seq_{i}') for i in range(self.n_chains)]
+        self.chain_names = chain_names if len(chain_names) == self.n_chains else [str(f'seq_{i}') for i in
+                                                                                  range(self.n_chains)]
         self.linkers_length = linkers_length or []
         self.lengths = lengths or []
         self.linker_mark = [0]

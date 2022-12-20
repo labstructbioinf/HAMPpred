@@ -162,4 +162,3 @@ class BaseConvolutionalWrapper(BaseWrapper):
               y_test=None):
         return super().train(X_train, y_train, X_test=X_test,
                              y_test=y_test)
-

@@ -83,7 +83,9 @@ class ImportanceDescriber:
         result['seq_id'] = range(len(result))
         data = pd.merge(result, data, on=['seq_id']).drop(columns=['seq'])
         data['diff'] = data.apply(lambda x: self._apply_metric(x), axis=1)
-        data['pos_diff'] = data.apply(lambda x :Metrics.mse_f1(x[self.res_col][max(x['pos']-2, 0):x['pos'] +2], x['new_pred'][max(x['pos']-2,0):x['pos'] +2]), axis=1)
+        data['pos_diff'] = data.apply(lambda x: Metrics.mse_f1(x[self.res_col][max(x['pos'] - 2, 0):x['pos'] + 2],
+                                                               x['new_pred'][max(x['pos'] - 2, 0):x['pos'] + 2]),
+                                      axis=1)
         data.dropna(subset=['diff'], inplace=True)
         data['pos_diff'] = data['pos_diff'].fillna(0)
         per_seq = data.groupby(['seq_id', 'pos', 'source_aa'], as_index=False). \
@@ -127,14 +129,14 @@ class ImportanceDescriber:
         for seq in seqs:
             new_seq = seq + (len(longest) - len(seq)) * 'X'
             for n, aa in enumerate(new_seq):
-                pos_dict[n][aa]+=1
+                pos_dict[n][aa] += 1
         seq = ''
         for pos, res in pos_dict.items():
-            seq+= max(res, key=res.get)
+            seq += max(res, key=res.get)
         common_seqs = []
         for pos, res in pos_dict.items():
             for aa, cnt in res.items():
-                new_seq = seq[:pos] + aa + seq[pos+1:]
+                new_seq = seq[:pos] + aa + seq[pos + 1:]
                 common_seqs.append(new_seq)
         return list(set(common_seqs))
 
@@ -155,13 +157,13 @@ class ImportanceDescriber:
         data['diff'] = data.apply(lambda x: self._apply_metric(x), axis=1)
         per_seq = data.groupby(['seq_id', 'pos', 'source_aa'], as_index=False). \
             agg({'diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'],
-                                                                  ascending=[True, True, False])
+                                              ascending=[True, True, False])
         per_seq.set_index(['seq_id'], inplace=True, drop=False)
         total = data.groupby(['pos', 'source_aa'], as_index=False).agg(
             {'diff': 'mean'}).sort_values(by=['pos', 'diff'], ascending=[True, False])
         mutations = data.groupby(['seq_id', 'pos', 'source_aa', 'target_aa'], as_index=False). \
             agg({'diff': 'mean'}).sort_values(by=['seq_id', 'pos', 'diff'],
-                                                                  ascending=[True, True, False])
+                                              ascending=[True, True, False])
         return total, per_seq, data, mutations
 
     def prepare_out(self, out):
@@ -204,4 +206,4 @@ class ImportanceDescriber:
         if self.metric == 'mse':
             return Metrics.mse_f1(x[self.res_col], x['new_pred'])
         else:
-            return np.abs(np.mean(x[self.res_col]) -np.mean(x['new_pred']))
+            return np.abs(np.mean(x[self.res_col]) - np.mean(x['new_pred']))

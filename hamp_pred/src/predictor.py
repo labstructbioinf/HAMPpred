@@ -9,6 +9,7 @@ from hamp_pred.src.predictor_config import PredictionConfig
 class Predictor:
     pos = os.path.dirname(__file__)
     models_dir = os.path.join(pos, 'models')
+
     def __init__(self, model, version=None,
                  model_data_dir=None,
                  config=None, infra=None, processors=None):
@@ -122,4 +123,5 @@ class Predictor:
 
     @classmethod
     def get_models_info(cls):
-        return [{"name": mod } for mod in set(os.listdir(cls.models_dir)).difference({'common'}) if not mod.startswith('__')]
+        return [{"name": mod} for mod in set(os.listdir(cls.models_dir)).difference({'common'}) if
+                not mod.startswith('__')]

@@ -1,7 +1,7 @@
-from ..common.models import BaseLinearWrapper
 from .adjust_prediction import PredictionAdjust
-from .test import Tester
 from .config import get_config
+from .test import Tester
+from ..common.models import BaseLinearWrapper
 
 
 def run(sequences, config=None):

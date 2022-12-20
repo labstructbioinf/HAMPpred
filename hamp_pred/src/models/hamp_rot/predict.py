@@ -1,8 +1,8 @@
 import numpy as np
 
 from hamp_pred.src.models.common.models import BaseLinearWrapper
-from .test import Tester
 from .config import get_config
+from .test import Tester
 
 
 def run(sequences, config=None):

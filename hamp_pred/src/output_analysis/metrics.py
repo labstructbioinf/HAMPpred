@@ -41,7 +41,7 @@ class Metrics:
         return Metrics.mse(tr, exp, ignore={sep})
 
     @staticmethod
-    def adjust_length( tr, exp, sep = 10000):
+    def adjust_length(tr, exp, sep=10000):
         if len(tr) < len(exp):
             tr = list(tr) + ([sep] * (len(exp) - len(tr)))
         elif len(exp) < len(tr):

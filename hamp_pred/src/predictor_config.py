@@ -1,13 +1,14 @@
+import os
 import pathlib
 import pickle
 
 from Bio import SeqIO
 
-from hamp_pred.external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
+from hamp_pred.external.SequenceEncoding.SequenceEncoding import SequenceEncoding
 from hamp_pred.src.input_prep.encode import MixedEncoder, OneHotEncoderSeq, RadianEncoder
 from hamp_pred.src.input_prep.prepare_sequence import MultiChainOperator, SeqWindow
-from hamp_pred.src.models.common.models import BaseConvolutionalWrapper, BaseLinearWrapper
-import os
+from hamp_pred.src.models.common.models import BaseConvolutionalWrapper
+
 
 class PredictionConfig:
     def __init__(self, model, operator,

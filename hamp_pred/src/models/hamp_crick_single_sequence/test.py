@@ -1,5 +1,5 @@
 from hamp_pred.src.models.hamp_crick_single_sequence.adjust_prediction import PredictionAdjust
-from hamp_pred.src.models.hamp_rot.test import Tester as RotTester, Metrics
+from hamp_pred.src.models.hamp_rot.test import Metrics, Tester as RotTester
 
 
 class Tester(RotTester):
@@ -15,7 +15,7 @@ class Tester(RotTester):
         rotation = prediction[self.out_column].notnull().sum() / len(prediction)
         correct = adjuster.get_with_f1_depend(prediction)
         tr, pr, pos_tr, pos_pr = adjuster.get_crick_tr_pred(correct)
-        metrics = {'f1_coverage': len(correct) /len(prediction),
+        metrics = {'f1_coverage': len(correct) / len(prediction),
                    'rotation_coverage': rotation,
                    'mean_crick_true': tr,
                    'mean_crick_pred': pr,

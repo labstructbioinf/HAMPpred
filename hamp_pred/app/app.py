@@ -1,6 +1,5 @@
 from flask import Blueprint, Flask
 
-
 from hamp_pred.app.celery_config import make_celery
 
 app = Flask(__name__)
@@ -20,4 +19,3 @@ celery = make_celery(app)
 from hamp_pred.app.api.rest import api
 
 init_app(app)
-
