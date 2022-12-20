@@ -17,7 +17,7 @@ For the local use, use the `pyproject.toml` file or `environment.yml` to create 
 **poetry**
 
 ```
-pip install petry
+pip install poetry
 poetry install
 # Starts virtualenv console (hamp_pred and hamp_train commands will be available in console)
 poetry shell
