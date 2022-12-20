@@ -95,7 +95,6 @@ class RadiousPhobosEncoder(SequenceEncoder):
 
 class OneHotEncoderSeq(SequenceEncoder):
     def __init__(self, categories='', null_cat=('?',)):
-        print(categories, aa1)
         cats = categories if categories else aa1
         self._set_params(cats, null_cat)
 
