@@ -124,7 +124,9 @@ ax.set_ylabel('Importance')
 ax.set_title("Amino acids importance in Af1503 sequence")
 ```
 
-This code will generate image ![img.png](img.png) with impact on predcited rotation assigned to 
+This code will generate image
+![img.png](img.png) 
+with impact on predcited rotation assigned to 
 each amino acid from Af1503 N and C helices.
 Such an analysis can be used for example to find position which can be substituted with different
 amino acid to change predicted rotation and thus that also signal transduction activity of given HAMP domain.
