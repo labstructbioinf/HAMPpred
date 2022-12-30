@@ -2,11 +2,10 @@ import argparse
 import pathlib
 import pickle
 
-from hamp_pred.src.predictor import Predictor
-from hamp_pred.src.predictor_config import DEFAULT_CONF
-
 
 def main(args):
+    from hamp_pred.src.predictor import Predictor
+    from hamp_pred.src.predictor_config import DEFAULT_CONF
     w = Predictor(args.model_name, config=DEFAULT_CONF)
     if args.test_sequences:
         result = w.predict(args.test_sequences)

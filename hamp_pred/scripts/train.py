@@ -1,10 +1,9 @@
 import argparse
 
-from hamp_pred.src.predictor import Predictor
-from hamp_pred.src.predictor_config import DEFAULT_CONF
-
 
 def main(args):
+    from hamp_pred.src.predictor import Predictor
+    from hamp_pred.src.predictor_config import DEFAULT_CONF
     w = Predictor(args.model_name, DEFAULT_CONF)
     return w.train(args.training_data)
 

@@ -22,6 +22,8 @@ def run(sequences, config=None):
     prediction = np.concatenate([prediction, prediction], axis=-1)
     result = operator.get_from_prediction(prediction, n_features=2, shrink_factor=2,
                                           result_col='predicted_rotation'), md, to_pred
+    result[0]['predicted_rotation'] = result[0]['N_pred']
+    result[0].drop(['N_pred', 'C_pred'], axis='columns')
     if config.get('is_test', False):
         return tester.get_metrics(test_data, result[0])
     return result
