@@ -1,6 +1,7 @@
 import importlib
 import os
 
+from hamp_pred.src.input_prep.pdb import PdbDataProcessor
 from hamp_pred.src.output_analysis.common_processors import FastaProcessor, MsaProcessor, SamccTestProcessor
 from hamp_pred.src.output_analysis.feature_importance import ImportanceDescriber, ModelMetrics
 from hamp_pred.src.predictor_config import PredictionConfig
@@ -23,7 +24,9 @@ class Predictor:
                                          'samcc_test': SamccTestProcessor,
                                          'mutator': None,
                                          'importance_describer': ImportanceDescriber,
-                                         'metrics': ModelMetrics}
+                                         'metrics': ModelMetrics,
+                                         'pdb': PdbDataProcessor
+                                         }
         if not os.path.exists(self.models_dir):
             raise ValueError(f"Model path {self.model_dir}. Available:"
                              f"{set(os.listdir(self.models_dir)).difference({'common'})}")
@@ -90,7 +93,7 @@ class Predictor:
         self.config.as_pickle(os.path.join(self.model_data_dir, 'config.p'))
         return result
 
-    def process_data(self, data, *args, kind='msa', **kwargs):
+    def process_data(self, data, *args, kind='msa', is_test=False, **kwargs):
         processor = self.processors.get(kind)(*args, **kwargs, model=self)
         if hasattr(processor, 'prepare_pred'):
             to_pred = processor.prepare_pred(data)
@@ -99,7 +102,7 @@ class Predictor:
         conf = self.config
         if hasattr(processor, 'adjust_config'):
             self.config = processor.adjust_config(self.config)
-        results = self.predict(to_pred)
+        results = self.predict(to_pred, is_test=is_test)
         self.config = conf
         if hasattr(processor, 'prepare_out'):
             return processor.prepare_out(results)

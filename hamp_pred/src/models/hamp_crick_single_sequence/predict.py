@@ -5,7 +5,9 @@ from ..common.models import BaseLinearWrapper
 
 
 def run(sequences, config=None):
-    config = get_config(config.get('predictor')).dump()
+    main_config = get_config(config.get('predictor')).dump()
+    main_config['is_test'] = config.get('is_test')
+    config = main_config
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
     adjuster = config.get('pred_adjuster') or PredictionAdjust()
     n_chains, features = operator.n_chains, 2

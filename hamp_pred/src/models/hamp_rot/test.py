@@ -29,8 +29,6 @@ class Tester:
             pos_rot_true.extend(rot)
             pred = np.reshape(pred, len(pred))
 
-            pred = (pred[::2] + pred[1::2]) / 2
-
             mean_pred.append(np.mean(pred))
             pos_rot_pred.extend(pred)
         metrics = {'true_pos_rot': pos_rot_true,

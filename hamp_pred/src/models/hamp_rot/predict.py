@@ -6,12 +6,14 @@ from .test import Tester
 
 
 def run(sequences, config=None):
-    config = get_config(config.get('predictor')).dump()
+    main_config = get_config(config.get('predictor')).dump()
+    main_config['is_test'] = config.get('is_test')
+    config = main_config
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
     n_chains, features = config.get('n_chains', 2), 2
     operator.n_chains = n_chains
     if config.get('is_test', False):
-        tester = config.get('tester') or Tester(scale=1)
+        tester = config.get('tester') or Tester(scale=1, out_column='predicted_rotation')
         test_data = sequences
         sequences = tester.get_squences(sequences)
     to_pred = operator.get_for_prediction(sequences)
