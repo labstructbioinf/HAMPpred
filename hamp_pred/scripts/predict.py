@@ -23,7 +23,8 @@ def main(args):
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default='hamp_crick_ensemble',
-                        help='Name of model to train')
+                        help='Name of model to train',
+                        choices=['hamp_crick_ensemble', 'hamp_rot', 'hamp_crick_single_sequence'])
     parser.add_argument('--model_type', default='base_linear',
                         help='Type of model to use, like linear, cnn, resnet etc.')
     parser.add_argument('--test_sequences', default='', nargs='+')
@@ -33,11 +34,11 @@ def run():
                         help='Kind of data to process',
                         choices=['msa', 'fasta'])
     parser.add_argument('--save_path', help='Path to save results')
-    parser.add_argument('--results_format', help='Format of results',
-                        default='tsv')
+    parser.add_argument('--results_format', help='Format of results (tsv or pickle)',
+                        default='tsv', choices=['tsv', 'pickle'])
     args = parser.parse_args()
     return main(args)
 
 
 if __name__ == '__main__':
-    run()
+    print(run())

@@ -1,7 +1,6 @@
 import importlib
 import os
 
-from hamp_pred.src.input_prep.pdb import PdbDataProcessor
 from hamp_pred.src.output_analysis.common_processors import FastaProcessor, MsaProcessor, SamccTestProcessor
 from hamp_pred.src.output_analysis.feature_importance import ImportanceDescriber, ModelMetrics
 from hamp_pred.src.predictor_config import PredictionConfig
@@ -19,13 +18,18 @@ class Predictor:
         self.model_dir = os.path.join(os.path.basename(self.models_dir), self.model)
         self.model_data_dir = model_data_dir or self.default_model_dir()
         self.config = config
+        try:
+            from hamp_pred.src.input_prep.pdb import PdbDataProcessor
+            pdb = PdbDataProcessor
+        except Exception:
+            pdb = None
         self.processors = processors or {'msa': MsaProcessor,
                                          'fasta': FastaProcessor,
                                          'samcc_test': SamccTestProcessor,
                                          'mutator': None,
                                          'importance_describer': ImportanceDescriber,
                                          'metrics': ModelMetrics,
-                                         'pdb': PdbDataProcessor
+                                         'pdb': pdb
                                          }
         if not os.path.exists(self.models_dir):
             raise ValueError(f"Model path {self.model_dir}. Available:"
