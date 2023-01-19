@@ -158,7 +158,7 @@ class MixedEncoder(SequenceEncoder):
 
 
 class RadianEncoder(LabelEncoder):
-    def __init__(self, scale=1, max_size=360, unknown=10000):
+    def __init__(self, scale=1, max_size=360, unknown=10000.0):
         self.scale = scale
         self.max_size = max_size
         self.outlier = np.array([2, 2])

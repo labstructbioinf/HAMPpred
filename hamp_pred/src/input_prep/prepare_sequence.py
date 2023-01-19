@@ -300,7 +300,7 @@ class MultiChainOperator:
         ids = ids.difference(test_ids)
         kp = list(ids)
         np.random.shuffle(kp)
-        if not test_ids:
+        if not val_ids:
             val_ids = kp[:val_size]
         train_ids = ids.difference(val_ids)
 

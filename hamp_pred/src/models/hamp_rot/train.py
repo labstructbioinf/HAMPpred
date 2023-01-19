@@ -1,20 +1,25 @@
 from hamp_pred.src.models.common.models import BaseLinearWrapper
 
 
+def get_seqs_vals(data, operator):
+    if 'train_seq' not in data.columns:
+        data['train_seq'] = data.apply(lambda x: x['n_seq'] + x['c_seq'], axis=1)
+    seqs = list(data.train_seq.values)
+    vals = [[[[c] for c in list((x[0::2] + x[1::2]) / 2)], [[c] for c in list((x[0::2] + x[1::2]) / 2)]] for x in
+            data['rot'].values]
+    train, valid, test = operator.get_for_train(seqs, vals, test_size=0, valid_size=0)
+    return train
+
+
 def run(data, config=None):
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
     n_chains, features = config.get('n_chains', 2), 1
     operator.n_chains = n_chains
-    seqs = list(data.train_seq.values)
-    vals = [[[[c] for c in list((x[0::2] + x[1::2]) / 2)], [[c] for c in list((x[0::2] + x[1::2]) / 2)]] for x in
-            data['rot'].values]
-
-    train, valid, test = operator.get_for_train(seqs, vals, ids=config.get('ids'),
-                                                test_ids=config.get('test_ids'),
-                                                val_ids=config.get('val_ids'))
+    valid_d = data[data['class'] == 'val']
+    train_d = data[data['class'] != 'val']
+    train, valid = get_seqs_vals(train_d, operator), get_seqs_vals(valid_d, operator)
     X, y = train
     val_x, val_y = valid
-
     y = y[:, :, 0:2]
     val_y = val_y[:, :, 0:2]
     model = model or BaseLinearWrapper(config=config)

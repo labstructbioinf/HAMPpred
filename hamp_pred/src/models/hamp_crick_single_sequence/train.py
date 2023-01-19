@@ -1,15 +1,20 @@
 from hamp_pred.src.models.common.models import BaseLinearWrapper
 
 
+def get_seqs_vals(data, operator):
+    seqs = list(data.full_sequence.values)
+    vals = [[[[c] for c in list(x)]] for x in data['full_crick'].values]
+    train, valid, test = operator.get_for_train(seqs, vals, test_size=0, valid_size=0)
+    return train
+
+
 def run(data, config=None):
     model, operator = config.get('model')(config=config.get('model_config')), config.get('operator')
     n_chains, features = 1, 2
     operator.n_chains = n_chains
-    seqs = list(data.full_sequence.values)
-    vals = [[[[c] for c in list(x)]] for x in data['full_crick'].values]
-    train, valid, test = operator.get_for_train(seqs, vals, ids=config.get('ids'),
-                                                test_ids=config.get('test_ids'),
-                                                val_ids=config.get('val_ids'))
+    valid_d = data[data['class'] == 'val']
+    train_d = data[data['class'] != 'val']
+    train, valid = get_seqs_vals(train_d, operator), get_seqs_vals(valid_d, operator)
     X, y = train
     val_x, val_y = valid
     model = model or BaseLinearWrapper(config=config)
