@@ -34,8 +34,7 @@ class BaseWrapper:
         self.history = self._model.fit(X_train, y_train,
                                        epochs=self.config.get('epochs', 60),
                                        verbose=True,
-                                       validation_data=(X_train, y_train),
-                                       # (X_test, y_test) if X_test and y_test else None,
+                                       validation_data=(X_test, y_test) if X_test and y_test else None,
                                        batch_size=64,
                                        callbacks=list(self.callbacks()))
         self._model.load_weights(self.weights_path)
