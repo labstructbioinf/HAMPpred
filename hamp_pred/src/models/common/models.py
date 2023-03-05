@@ -4,6 +4,8 @@ from keras import Input, layers
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ProgbarLogger, ReduceLROnPlateau
 from keras.models import Model
 
+from hamp_pred.utils.numpy_json import are_arrays_with_data
+
 
 class BaseWrapper:
     def __init__(self, name, data_dir=None, use_case=None, version=None):
@@ -34,7 +36,7 @@ class BaseWrapper:
         self.history = self._model.fit(X_train, y_train,
                                        epochs=self.config.get('epochs', 60),
                                        verbose=True,
-                                       validation_data=(X_test, y_test) if X_test and y_test else None,
+                                       validation_data=(X_test, y_test) if are_arrays_with_data((X_test, y_test)) else None,
                                        batch_size=64,
                                        callbacks=list(self.callbacks()))
         self._model.load_weights(self.weights_path)
