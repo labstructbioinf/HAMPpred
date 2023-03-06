@@ -169,6 +169,8 @@ class ImportanceDescriber:
     def prepare_out(self, out):
         if self.kind == 'data':
             return getattr(self, f'{self.mode}_feature_importance')(out)
+        elif self.kind == 'mutations':
+            return getattr(self, f'{self.mode}_feature_importance')(out)[-1]
         elif self.kind == 'plot_seq':
             return self.plot_importance_per_seq(out)
         elif self.kind == 'heatmap':
@@ -205,5 +207,9 @@ class ImportanceDescriber:
     def _apply_metric(self, x):
         if self.metric == 'mse':
             return Metrics.mse_f1(x[self.res_col], x['new_pred'])
-        else:
+        elif self.metric == 'signed_mean':
+            return np.mean(x['new_pred']) - np.mean(x[self.res_col])
+        elif self.metric == 'unsigned_mean':
             return np.abs(np.mean(x[self.res_col]) - np.mean(x['new_pred']))
+        else:
+            raise ValueError(f"Unknown metric {self.metric}")
