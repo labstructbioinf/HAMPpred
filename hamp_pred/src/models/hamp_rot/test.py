@@ -25,12 +25,12 @@ class Tester:
                 print('error! no results')
                 continue
 
-            mean_rot_true.append(np.mean(rot))
-            pos_rot_true.extend(rot)
+            mean_rot_true.append(np.mean(rot)/2)
+            pos_rot_true.extend(rot/2)
             pred = np.reshape(pred, len(pred))
 
-            mean_pred.append(np.mean(pred))
-            pos_rot_pred.extend(pred)
+            mean_pred.append(np.mean(pred)/2)
+            pos_rot_pred.extend(pred/2)
         metrics = {'true_pos_rot': pos_rot_true,
                    'pred_pos_rot': pos_rot_pred,
                    'true_mean_rot': mean_rot_true,

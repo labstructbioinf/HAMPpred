@@ -44,7 +44,7 @@ class BaseWrapper:
 
     def callbacks(self):
         logger = ProgbarLogger(stateful_metrics=['mse'])
-        earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='min')
+        earlyStopping = EarlyStopping(monitor='val_loss', patience=15, verbose=0, mode='min')
         mcp_save = ModelCheckpoint(self.weights_path, save_best_only=True, monitor='val_loss', mode='min')
         reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=7, verbose=1, epsilon=1e-4,
                                            mode='min')
