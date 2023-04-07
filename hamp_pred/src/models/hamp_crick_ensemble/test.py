@@ -35,8 +35,7 @@ class Tester:
     def get_squences(self, data):
         sequences, mean_rot = [], []
         for ind, row in data.iterrows():
-            seq = row['n_seq'][1:-1] + row['c_seq'][1:-1]
-            sequences.append(seq)
+            sequences.append(row['full_sequence'])
         return sequences
 
     def _to_arrays(self, metrics):
