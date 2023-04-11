@@ -4,7 +4,7 @@ from collections import defaultdict
 import pandas as pd
 from Bio.PDB import PDBParser
 from Bio.PDB.Polypeptide import d3_to_index, dindex_to_1
-from samcc.bundleClass import bundleClass
+#from samcc.bundleClass import bundleClass
 
 
 def measure_one_HAMP(path_hamp, a1_start=None, a1_stop=None, a2_start=None, a2_stop=None, chain1=None, chain2=None):

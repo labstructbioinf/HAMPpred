@@ -1,4 +1,4 @@
-name: plmblast
+name: hamppred
 channels:
   - defaults
 dependencies:
@@ -7,6 +7,6 @@ dependencies:
   - keras
   - paramiko
   - tensorflow
-  - Bio
+  - biopython
   - seaborn
   - scikit-learn
