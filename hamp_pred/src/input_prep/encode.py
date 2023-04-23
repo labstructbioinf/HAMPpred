@@ -7,6 +7,51 @@ from sklearn.preprocessing import MinMaxScaler
 
 from hamp_pred.external.SequenceEncoding.SequenceEncoding import SequenceEncoding, get_dict
 
+radius = {
+    'A': 88.6,
+    'R': 173.4,
+    'G': 60.1,
+    'S': 89.0,
+    'C': 108.5,
+    'D': 111.1,
+    'P': 112.7,
+    'N': 114.1,
+    'T': 116.1,
+    'E': 138.4,
+    'Q': 143.8,
+    'H': 153.2,
+    'M': 162.9,
+    'I': 166.7,
+    'L': 166.7,
+    'K': 168.6,
+    'F': 189.9,
+    'Y': 193.6,
+    'W': 227.8,
+    'V': 140.0
+}
+phobos = {
+    'I': 4.5,
+    'V': 4.2,
+    'L': 3.8,
+    'F': 2.8,
+    'C': 2.5,
+    'M': 1.9,
+    'A': 1.8,
+    'G': -0.4,
+    'T': -0.7,
+    'S': -0.8,
+    'W': -0.9,
+    'Y': -1.3,
+    'P': 1.6,
+    'H': -3.2,
+    'D': -3.5,
+    'E': -3.5,
+    'N': -3.5,
+    'Q': -3.5,
+    'K': -3.9,
+    'R': -4.5
+}
+
 
 class SequenceEncoder:
     def encode(self, seq, *args, **kwargs):
@@ -34,54 +79,10 @@ class LabelEncoder:
 
 
 class RadiousPhobosEncoder(SequenceEncoder):
-    radius = {
-        'A': 88.6,
-        'R': 173.4,
-        'G': 60.1,
-        'S': 89.0,
-        'C': 108.5,
-        'D': 111.1,
-        'P': 112.7,
-        'N': 114.1,
-        'T': 116.1,
-        'E': 138.4,
-        'Q': 143.8,
-        'H': 153.2,
-        'M': 162.9,
-        'I': 166.7,
-        'L': 166.7,
-        'K': 168.6,
-        'F': 189.9,
-        'Y': 193.6,
-        'W': 227.8,
-        'V': 140.0
-    }
-    phobos = {
-        'I': 4.5,
-        'V': 4.2,
-        'L': 3.8,
-        'F': 2.8,
-        'C': 2.5,
-        'M': 1.9,
-        'A': 1.8,
-        'G': -0.4,
-        'T': -0.7,
-        'S': -0.8,
-        'W': -0.9,
-        'Y': -1.3,
-        'P': 1.6,
-        'H': -3.2,
-        'D': -3.5,
-        'E': -3.5,
-        'N': -3.5,
-        'Q': -3.5,
-        'K': -3.9,
-        'R': -4.5
-    }
 
     def __init__(self):
-        self.phobos_scaled = self._scale_dict(self.phobos)
-        self.radius_scaled = self._scale_dict(self.radius)
+        self.phobos_scaled = self._scale_dict(phobos)
+        self.radius_scaled = self._scale_dict(radius)
 
     def _scale_dict(self, d):
         a = np.asarray(list(d.values())).reshape(-1, 1)
@@ -130,7 +131,7 @@ class OneHotEncoderSeq(SequenceEncoder):
                 res = np.argmax(row)
                 c += self.inv_cat_dict[res]
             else:
-                c += self.null_cat
+                c += self.null_char
         return c
 
 
