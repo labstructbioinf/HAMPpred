@@ -1,12 +1,23 @@
 name: hamppred
 channels:
   - defaults
+  - conda-forge
 dependencies:
+  - python==3.9
   - numpy
   - pandas
   - keras
   - paramiko
   - tensorflow
-  - biopython
   - seaborn
   - scikit-learn
+  - sympy
+  - jupyter
+  - atomium
+  - biopandas
+  - biopython
+  - tqdm
+  - networkx=2.5
+  - pip:
+    - samcc_turbo
+    - localpdb
