@@ -1,11 +1,14 @@
 import math
 import os
-
+import sys
 import numpy as np
 from biopandas.pdb import PandasPdb
+from sympy import nsimplify
+
+# please install samcc turbo from https://github.com/labstructbioinf/samcc_turbo
+sys.path.append('/home/nfs/sdunin/scr/samcc_turbo')
 from samcc.bundleClass import bundleClass
 from samcc.helper_functions import gen_expected_crick_angles
-from sympy import nsimplify
 
 crangles = {'a': 19.5, 'b': 122.35, 'c': -134.78, 'd': -31.92, 'e': 70.92, 'f': 173.78, 'g': -83.35}
 
