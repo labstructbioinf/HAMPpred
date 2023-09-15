@@ -96,8 +96,10 @@ def measure_one_HAMP(path_hamp, a1_start=None, a1_stop=None, a2_start=None, a2_s
     bundle.calc_radius()
     bundle.calc_periodicity()
     bundle.calc_crickdev(P=3.5, REP=7, optimal_ph1=19.5)
+    bundle.calc_axialshift()
+    bundle.calc_pitch_angle()
+    bundle.calc_radius()
     bundle_df = bundle.gendf()
-
     crick = bundle_df.crick.values
     n_crick = crick[0::2]
     c_crick = crick[1::2]
