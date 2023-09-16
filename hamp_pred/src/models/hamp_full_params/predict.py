@@ -18,6 +18,6 @@ def run(sequences, config=None):
     prediction = md.predict(to_pred)
     prediction = np.concatenate([prediction, prediction], axis=-1)
     result = operator.get_from_prediction(prediction, n_features=8, shrink_factor=2,
-                                          result_col='predicted_params'), md, to_pred
-    result[0].drop(['N_pred', 'C_pred'], axis='columns')
+                                          result_col='predicted_params',
+                                          selected_chain_for_results="N_pred"), md, to_pred
     return result
