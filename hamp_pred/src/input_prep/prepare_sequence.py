@@ -203,14 +203,17 @@ class MultiChainOperator:
         self._data = data
         return enc
 
-    def get_from_prediction(self, prediction, n_features=1, shrink_factor=1, result_col='prediction'):
+    def get_from_prediction(self, prediction, n_features=1, shrink_factor=1, result_col='prediction',
+                            selected_chain_for_results=None,
+                            feature_names=None):
         xp = self._data.copy()
         for helix_pos, prep in enumerate(self._prep_chains):
-            helix = prediction[:, :, helix_pos * n_features: (helix_pos + 1) * n_features]
-            preds, helix = self.preparator.invert(prep, helix)
-            if self.y_encoder:
-                helix = self.y_encoder.invert(helix)
-            xp[self.chain_names[helix_pos] + '_pred'] = list(helix)
+            if (selected_chain_for_results and selected_chain_for_results.strip("_pred") == self.chain_names[helix_pos]) or not selected_chain_for_results:
+                helix = prediction[:, :, helix_pos * n_features: (helix_pos + 1) * n_features]
+                preds, helix = self.preparator.invert(prep, helix)
+                if self.y_encoder:
+                    helix = self.y_encoder.invert(helix)
+                xp[self.chain_names[helix_pos] + '_pred'] = list(helix)
 
         def merge(x):
             res = []
@@ -221,9 +224,17 @@ class MultiChainOperator:
                     lk = x['linkers'][n] * [self.linker_mark * fc]
                     if lk:
                         res.append(lk)
-            return np.concatenate(res)
-
-        xp[result_col] = xp.apply(lambda x: merge(x), axis=1)
+            return np.concatenate(res, axis=-1)
+        def select(x, n):
+            return x[result_col][:,n]
+        if selected_chain_for_results:
+            xp[result_col] = xp[selected_chain_for_results]
+            xp.drop([selected_chain_for_results], axis='columns', inplace=True)
+        else:
+            xp[result_col] = xp.apply(lambda x: merge(x), axis=1)
+        if feature_names:
+            for n, feature in enumerate(feature_names):
+                xp[feature] = xp.apply(lambda x: select(x, n), axis=1)
         return xp
 
     def get_for_train(self, X, y=None, ids=None,
