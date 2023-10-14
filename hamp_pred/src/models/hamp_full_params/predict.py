@@ -20,5 +20,5 @@ def run(sequences, config=None):
     result = operator.get_from_prediction(prediction, n_features=8, shrink_factor=2,
                                           result_col='predicted_params',
                                           selected_chain_for_results="N_pred",
-                                          feature_names=["rot","shift_diff", "radius_diff", "pitch_diff"]), md, to_pred
+                                          feature_names=["crick_mut", "shift", "radius", "pitch"]), md, to_pred
     return result

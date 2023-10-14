@@ -4,11 +4,11 @@ from hamp_pred.src.models.common.models import BaseLinearWrapper
 def get_seqs_vals(data, operator):
     if 'train_seq' not in data.columns:
         data['train_seq'] = data.apply(lambda x: x['n_seq'] + x['c_seq'], axis=1)
-    params = ["rot", "shift_diff", "radius_diff", "pitch_diff"]
+    params = ["crick_mut", "shift", "radius", "pitch"]
     seqs = list(data.train_seq.values)
     results = []
     for ind, row in data.iterrows():
-        r = {param: list((row[param][0::2] + row[param][1::2]) / 2) for param in params}
+        r = {param: list(((row["n_" + param] - row["c_" + param])[0::2] + (row["n_" + param] - row["c_" + param])[1::2]) / 2) for param in params}
         res = [list(zip(*list(r.values()))), list(zip(*list(r.values())))]
         results.append(res)
     train, valid, test = operator.get_for_train(seqs, results, test_size=0, valid_size=0)

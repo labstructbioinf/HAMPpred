@@ -123,6 +123,10 @@ class BaseConvolutionalWrapper(BaseWrapper):
 
     def _schema(self, inp, n_layers=3, filters=64, kernel_sizes=(7, 5, 3, 11, 14), norm=False, **kwargs):
         inp = layers.Masking(mask_value=0., input_shape=(inp.shape[1], inp.shape[2]))(inp)
+        if kwargs.get("attention"):
+            for i in range(kwargs.get('attention')):
+                inp = layers.Attention(dropout=0.2, use_scale=True)([inp, inp])
+            inp = layers.Concatenate()([inp, inp])
         for i in range(n_layers):
             res = []
             for kr in kernel_sizes:
@@ -131,6 +135,7 @@ class BaseConvolutionalWrapper(BaseWrapper):
             inp = conc
             if norm:
                 inp = layers.BatchNormalization()(inp)
+
         if kwargs.get('lstm'):
             for i in range(kwargs.get('lstm')):
                 inp = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(inp)
